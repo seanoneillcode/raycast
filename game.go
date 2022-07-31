@@ -2,7 +2,6 @@ package raycast
 
 import (
 	"fmt"
-	"math"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -11,15 +10,14 @@ import (
 
 const (
 	WindowWidth   = 1024
-	WindowHeight  = 768
+	WindowHeight  = 1024
 	ScreenWidth   = 256
-	ScreenHeight  = 192
+	ScreenHeight  = 256
 	PlayerWidth   = 4
 	GlobalScale   = 1
 	MapSize       = 8
 	TileSize      = 1
 	NumRays       = 256
-	FieldOfView   = (70) * (math.Pi / 180)
 	TextureWidth  = 32
 	TextureHeight = 32
 )

@@ -32,8 +32,9 @@ type World struct {
 	playerPos       point
 	playerDir       point
 	playerStrafeDir point
-	plane           point
-	oldMousePos     int
+	// the ration of the plane to the playerDir makes the field of view
+	plane       point
+	oldMousePos int
 }
 
 func NewWorld(width, height int) *World {
@@ -46,7 +47,7 @@ func NewWorld(width, height int) *World {
 			y: -1,
 		},
 		plane: point{
-			x: 0.66,
+			x: 0.5,
 			y: 0,
 		},
 		playerStrafeDir: point{
