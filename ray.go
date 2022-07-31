@@ -74,10 +74,6 @@ func calculateRay(w *World, cameraX float64) ray {
 			side = 1
 		}
 
-		if mapPos.x > w.width || mapPos.x < 0 || mapPos.y > w.height || mapPos.y < 0 {
-			break
-		}
-
 		t := w.getTile(mapPos.x, mapPos.y)
 		if t != nil {
 			if t.block {

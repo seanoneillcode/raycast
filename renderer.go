@@ -16,12 +16,16 @@ func NewRenderer() *Renderer {
 		image: ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
 		textures: []image.Image{
 			LoadImage("wall-2.png"),
-			LoadImage("stone.png"),
+			LoadImage("floor-1.png"),
+			LoadImage("ceiling.png"),
 		},
 	}
 }
 
 func (r *Renderer) Render(screen *ebiten.Image, w *World) {
+
+	r.drawFloor(w)
+
 	for rayIndex := 0; rayIndex < NumRays; rayIndex++ {
 		// cameraX goes from -1 to +1 (very roughly)
 		cameraX := 2*(float64(rayIndex)/float64(NumRays)) - 1
@@ -78,11 +82,11 @@ func (r *Renderer) drawRay(ray ray, index int) {
 			}
 			r.SetActualPixel(float64(x), float64(y), c)
 		} else {
-			if y < ScreenHeight/2 {
-				r.SetActualPixel(float64(x), float64(y), skyColor)
-			} else {
-				r.SetActualPixel(float64(x), float64(y), grassColor)
-			}
+			//if y < ScreenHeight/2 {
+			//	r.SetActualPixel(float64(x), float64(y), skyColor)
+			//} else {
+			//	//r.SetActualPixel(float64(x), float64(y), grassColor)
+			//}
 		}
 	}
 }
@@ -131,5 +135,74 @@ func (r *Renderer) drawEdgeTile(tx int, ty int) {
 			}
 			r.SetActualPixel(float64(x), float64(y), col)
 		}
+	}
+}
+
+func (r *Renderer) drawFloor(w *World) {
+	for y := ScreenHeight / 2; y < ScreenHeight; y++ {
+		// rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
+		rayDirX0 := w.playerDir.x - w.plane.x
+		rayDirY0 := w.playerDir.y - w.plane.y
+		rayDirX1 := w.playerDir.x + w.plane.x
+		rayDirY1 := w.playerDir.y + w.plane.y
+
+		// Current y position compared to the center of the screen (the horizon)
+		p := y - ScreenHeight/2
+
+		// Vertical position of the camera.
+		// NOTE: with 0.5, it's exactly in the center between floor and ceiling,
+		// matching also how the walls are being raycasted. For different values
+		// than 0.5, a separate loop must be done for ceiling and floor since
+		// they're no longer symmetrical.
+		posZ := 0.5 * ScreenHeight
+
+		// Horizontal distance from the camera to the floor for the current row.
+		// 0.5 is the z position exactly in the middle between floor and ceiling.
+		// NOTE: this is affine texture mapping, which is not perspective correct
+		// except for perfectly horizontal and vertical surfaces like the floor.
+		// NOTE: this formula is explained as follows: The camera ray goes through
+		// the following two points: the camera itself, which is at a certain
+		// height (posZ), and a point in front of the camera (through an imagined
+		// vertical plane containing the screen pixels) with horizontal distance
+		// 1 from the camera, and vertical position p lower than posZ (posZ - p). When going
+		// through that point, the line has vertically traveled by p units and
+		// horizontally by 1 unit. To hit the floor, it instead needs to travel by
+		// posZ units. It will travel the same ratio horizontally. The ratio was
+		// 1 / p for going through the camera plane, so to go posZ times farther
+		// to reach the floor, we get that the total horizontal distance is posZ / p.
+		rowDistance := posZ / float64(p)
+
+		// calculate the real world step vector we have to add for each x (parallel to camera plane)
+		// adding step by step avoids multiplications with a weight in the inner loop
+		floorStepX := rowDistance * (rayDirX1 - rayDirX0) / ScreenWidth
+		floorStepY := rowDistance * (rayDirY1 - rayDirY0) / ScreenWidth
+
+		// real world coordinates of the leftmost column. This will be updated as we step to the right.
+		floorX := w.playerPos.x + rowDistance*rayDirX0
+		floorY := w.playerPos.y + rowDistance*rayDirY0
+
+		for x := 0; x < ScreenWidth; x++ {
+			// the cell coord is simply got from the integer parts of floorX and floorY
+			cellX := (int)(floorX)
+			cellY := (int)(floorY)
+
+			// get the texture coordinate from the fractional part
+			tx := (int)(TextureWidth*(floorX-float64(cellX))) & (TextureWidth - 1)
+			ty := (int)(TextureHeight*(floorY-float64(cellY))) & (TextureHeight - 1)
+
+			floorX += floorStepX
+			floorY += floorStepY
+
+			// floor
+			img := r.textures[1]
+			c := img.At(tx, ty)
+			r.SetActualPixel(float64(x), float64(y), c)
+
+			// ceiling
+			img = r.textures[2]
+			c = img.At(tx, ty)
+			r.SetActualPixel(float64(x), float64(ScreenHeight-y-1), c)
+		}
+
 	}
 }
