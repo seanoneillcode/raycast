@@ -5,10 +5,11 @@ import "math"
 type ray struct {
 	side     int
 	distance float64
-	angle    float64
+	wallx    float64
+	dir      point
 }
 
-func getRay(w *World, angle float64) ray {
+func calculateRay(w *World, angle float64) ray {
 	rayStart := point{
 		x: w.playerPos.x,
 		y: w.playerPos.y,
@@ -93,9 +94,20 @@ func getRay(w *World, angle float64) ray {
 		}
 	}
 
+	cosDistance := modDistance * math.Cos(angle-w.playerDir)
+
+	var wallx float64
+	if side == 0 {
+		wallx = rayStart.y + (modDistance * rayDir.y)
+	} else {
+		wallx = rayStart.x + (modDistance * rayDir.x)
+	}
+	wallx -= math.Floor(wallx)
+
 	return ray{
-		distance: modDistance * math.Cos(angle-w.playerDir),
+		distance: cosDistance,
 		side:     side,
-		angle:    angle,
+		wallx:    wallx,
+		dir:      rayDir,
 	}
 }

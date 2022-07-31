@@ -10,16 +10,18 @@ import (
 )
 
 const (
-	WindowWidth  = 1024
-	WindowHeight = 768
-	ScreenWidth  = 256
-	ScreenHeight = 192
-	PlayerWidth  = 4
-	GlobalScale  = 1
-	MapSize      = 8
-	TileSize     = 1
-	NumRays      = 256
-	FieldOfView  = (70) * (math.Pi / 180)
+	WindowWidth   = 1024
+	WindowHeight  = 768
+	ScreenWidth   = 256
+	ScreenHeight  = 192
+	PlayerWidth   = 4
+	GlobalScale   = 1
+	MapSize       = 8
+	TileSize      = 1
+	NumRays       = 256
+	FieldOfView   = (70) * (math.Pi / 180)
+	TextureWidth  = 32
+	TextureHeight = 32
 )
 
 type Game struct {

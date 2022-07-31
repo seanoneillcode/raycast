@@ -10,7 +10,11 @@ import (
 	_ "image/png"
 )
 
-func LoadImage(imageFileName string) *ebiten.Image {
+func LoadEbitenImage(imageFileName string) *ebiten.Image {
+	return ebiten.NewImageFromImage(LoadImage(imageFileName))
+}
+
+func LoadImage(imageFileName string) image.Image {
 	file, err := os.Open("res/" + imageFileName)
 	if err != nil {
 		log.Fatalf("failed to open file: %v", err)
@@ -19,5 +23,5 @@ func LoadImage(imageFileName string) *ebiten.Image {
 	if err != nil {
 		log.Fatal(err)
 	}
-	return ebiten.NewImageFromImage(img)
+	return img
 }

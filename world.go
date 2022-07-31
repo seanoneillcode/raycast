@@ -7,8 +7,8 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
-const moveAmount = 0.004
-const rotateAmount = 0.001
+const moveAmount = 0.002
+const rotateAmount = 0.0005
 
 type point struct {
 	x float64
