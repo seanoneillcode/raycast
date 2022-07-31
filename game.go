@@ -15,7 +15,7 @@ const (
 	ScreenHeight  = 256
 	PlayerWidth   = 4
 	GlobalScale   = 1
-	MapSize       = 8
+	MapSize       = 16
 	TileSize      = 1
 	NumRays       = 256
 	TextureWidth  = 32
