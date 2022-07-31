@@ -9,20 +9,20 @@ type ray struct {
 	dir      point
 }
 
-func calculateRay(w *World, angle float64) ray {
+func calculateRay(w *World, cameraX float64) ray {
 	rayStart := point{
 		x: w.playerPos.x,
 		y: w.playerPos.y,
 	}
 
 	rayDir := point{
-		x: math.Cos(angle),
-		y: math.Sin(angle),
+		x: w.playerDir.x + w.plane.x*cameraX,
+		y: w.playerDir.y + w.plane.y*cameraX,
 	}
 
 	rayUnitStepSize := point{
-		x: math.Sqrt(1 + (rayDir.y/rayDir.x)*(rayDir.y/rayDir.x)),
-		y: math.Sqrt(1 + (rayDir.x/rayDir.y)*(rayDir.x/rayDir.y)),
+		x: math.Abs(1 / rayDir.x),
+		y: math.Abs(1 / rayDir.y),
 	}
 
 	if rayUnitStepSize.x == 0 {
@@ -86,26 +86,25 @@ func calculateRay(w *World, angle float64) ray {
 		}
 	}
 
-	modDistance := 256.0
+	perpWallDist := 256.0
 	if tileFound {
-		modDistance = rayLength.x - rayUnitStepSize.x
-		if side == 1 {
-			modDistance = rayLength.y - rayUnitStepSize.y
+		if side == 0 {
+			perpWallDist = rayLength.x - rayUnitStepSize.x
+		} else {
+			perpWallDist = rayLength.y - rayUnitStepSize.y
 		}
 	}
 
-	cosDistance := modDistance * math.Cos(angle-w.playerDir)
-
 	var wallx float64
 	if side == 0 {
-		wallx = rayStart.y + (modDistance * rayDir.y)
+		wallx = rayStart.y + (perpWallDist * rayDir.y)
 	} else {
-		wallx = rayStart.x + (modDistance * rayDir.x)
+		wallx = rayStart.x + (perpWallDist * rayDir.x)
 	}
 	wallx -= math.Floor(wallx)
 
 	return ray{
-		distance: cosDistance,
+		distance: perpWallDist,
 		side:     side,
 		wallx:    wallx,
 		dir:      rayDir,

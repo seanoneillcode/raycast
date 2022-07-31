@@ -29,9 +29,11 @@ type World struct {
 	height int
 	tiles  [][]*tile
 
-	playerPos   point
-	playerDir   float64
-	oldMousePos int
+	playerPos       point
+	playerDir       point
+	playerStrafeDir point
+	plane           point
+	oldMousePos     int
 }
 
 func NewWorld(width, height int) *World {
@@ -39,6 +41,22 @@ func NewWorld(width, height int) *World {
 		width:  width,
 		height: height,
 		tiles:  make([][]*tile, width*height),
+		playerDir: point{
+			x: 0,
+			y: -1,
+		},
+		plane: point{
+			x: 0.66,
+			y: 0,
+		},
+		playerStrafeDir: point{
+			x: 1,
+			y: 0,
+		},
+		playerPos: point{
+			x: 3,
+			y: 3,
+		},
 	}
 	for x := 0; x < w.width; x++ {
 		w.tiles[x] = make([]*tile, width*height)
@@ -54,105 +72,44 @@ func (w *World) Update(delta float64) error {
 
 	// handle input
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		angle := w.playerDir * math.Pi / 3
-
-		movex := math.Cos(angle) * delta * moveAmount
-		movey := math.Sin(angle) * delta * moveAmount
-
-		newposx := w.playerPos.x + (movex * PlayerWidth)
-		newposy := w.playerPos.y
-
-		tilex := w.getTile(int(newposx), int(newposy))
-		if tilex == nil || !tilex.block {
-			w.playerPos.x += movex
-		}
-
-		newposx = w.playerPos.x
-		newposy = w.playerPos.y + (movey * PlayerWidth)
-
-		tiley := w.getTile(int(newposx), int(newposy))
-		if tiley == nil || !tiley.block {
-			w.playerPos.y += movey
-		}
-
+		movePlayer(w, delta, point{
+			x: w.playerDir.x,
+			y: w.playerDir.y,
+		})
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		angle := w.playerDir * math.Pi / 3
-
-		movex := math.Cos(angle) * delta * moveAmount
-		movey := math.Sin(angle) * delta * moveAmount
-
-		newposx := w.playerPos.x - (movex * PlayerWidth)
-		newposy := w.playerPos.y
-
-		tilex := w.getTile(int(newposx), int(newposy))
-		if tilex == nil || !tilex.block {
-			w.playerPos.x -= movex
-		}
-
-		newposx = w.playerPos.x
-		newposy = w.playerPos.y - (movey * PlayerWidth)
-
-		tiley := w.getTile(int(newposx), int(newposy))
-		if tiley == nil || !tiley.block {
-			w.playerPos.y -= movey
-		}
+		movePlayer(w, delta, point{
+			x: -w.playerDir.x,
+			y: -w.playerDir.y,
+		})
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		angle := w.playerDir * math.Pi / 3
-
-		movex := math.Sin(angle) * delta * moveAmount
-		movey := -math.Cos(angle) * delta * moveAmount
-
-		newposx := w.playerPos.x + (movex * PlayerWidth)
-		newposy := w.playerPos.y
-
-		tilex := w.getTile(int(newposx), int(newposy))
-		if tilex == nil || !tilex.block {
-			w.playerPos.x += movex
-		}
-
-		newposx = w.playerPos.x
-		newposy = w.playerPos.y + (movey * PlayerWidth)
-
-		tiley := w.getTile(int(newposx), int(newposy))
-		if tiley == nil || !tiley.block {
-			w.playerPos.y += movey
-		}
+		movePlayer(w, delta, point{
+			x: -w.playerStrafeDir.x,
+			y: -w.playerStrafeDir.y,
+		})
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		angle := w.playerDir * math.Pi / 3
-
-		movex := -math.Sin(angle) * delta * moveAmount
-		movey := math.Cos(angle) * delta * moveAmount
-
-		newposx := w.playerPos.x + (movex * PlayerWidth)
-		newposy := w.playerPos.y
-
-		tilex := w.getTile(int(newposx), int(newposy))
-		if tilex == nil || !tilex.block {
-			w.playerPos.x += movex
-		}
-
-		newposx = w.playerPos.x
-		newposy = w.playerPos.y + (movey * PlayerWidth)
-
-		tiley := w.getTile(int(newposx), int(newposy))
-		if tiley == nil || !tiley.block {
-			w.playerPos.y += movey
-		}
+		movePlayer(w, delta, point{
+			x: w.playerStrafeDir.x,
+			y: w.playerStrafeDir.y,
+		})
 	}
 
 	// mouse look
 	mx, _ := ebiten.CursorPosition()
 	mouseMove := w.oldMousePos - mx
-	w.playerDir += rotateAmount * delta * float64(-mouseMove)
-	if w.playerDir < 0 {
-		w.playerDir += math.Pi * 2
-	}
-	if w.playerDir > math.Pi*2 {
-		w.playerDir -= math.Pi * 2
-	}
+	rotation := rotateAmount * delta * float64(mouseMove)
+
+	oldDirX := w.playerDir.x
+	w.playerDir.x = w.playerDir.x*math.Cos(-rotation) - w.playerDir.y*math.Sin(-rotation)
+	w.playerDir.y = oldDirX*math.Sin(-rotation) + w.playerDir.y*math.Cos(-rotation)
+	oldPlaneX := w.plane.x
+	w.plane.x = w.plane.x*math.Cos(-rotation) - w.plane.y*math.Sin(-rotation)
+	w.plane.y = oldPlaneX*math.Sin(-rotation) + w.plane.y*math.Cos(-rotation)
+	oldStrafeX := w.playerStrafeDir.x
+	w.playerStrafeDir.x = w.playerStrafeDir.x*math.Cos(-rotation) - w.playerStrafeDir.y*math.Sin(-rotation)
+	w.playerStrafeDir.y = oldStrafeX*math.Sin(-rotation) + w.playerStrafeDir.y*math.Cos(-rotation)
 	w.oldMousePos = mx
 
 	// syscalls
@@ -160,6 +117,27 @@ func (w *World) Update(delta float64) error {
 		return errors.New("normal escape termination")
 	}
 	return nil
+}
+
+func movePlayer(w *World, delta float64, dir point) {
+	movex := dir.x * moveAmount * delta
+	movey := dir.y * moveAmount * delta
+
+	newposx := w.playerPos.x + (movex * PlayerWidth)
+	newposy := w.playerPos.y
+
+	tilex := w.getTile(int(newposx), int(newposy))
+	if tilex == nil || !tilex.block {
+		w.playerPos.x += movex
+	}
+
+	newposx = w.playerPos.x
+	newposy = w.playerPos.y + (movey * PlayerWidth)
+
+	tiley := w.getTile(int(newposx), int(newposy))
+	if tiley == nil || !tiley.block {
+		w.playerPos.y += movey
+	}
 }
 
 func (w *World) getTileAtPoint(x, y float64) *tile {
@@ -197,6 +175,4 @@ func initWorld(w *World) {
 		}
 	}
 
-	w.playerPos.x = 2
-	w.playerPos.y = 4
 }

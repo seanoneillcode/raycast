@@ -18,7 +18,7 @@ func main() {
 
 	ebiten.SetWindowSize(raycast.WindowWidth, raycast.WindowHeight)
 	ebiten.SetWindowTitle("Raycast DEMO")
-	ebiten.SetCursorMode(ebiten.CursorModeCaptured)
+	//ebiten.SetCursorMode(ebiten.CursorModeCaptured)
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}

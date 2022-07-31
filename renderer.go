@@ -24,14 +24,12 @@ func NewRenderer() *Renderer {
 }
 
 func (r *Renderer) Render(screen *ebiten.Image, w *World) {
-	angleStep := FieldOfView / float64(NumRays)
-	startAngle := w.playerDir - (angleStep * float64(NumRays/2))
 	for rayIndex := 0; rayIndex < NumRays; rayIndex++ {
-		angle := startAngle + (angleStep * float64(rayIndex))
-		ra := calculateRay(w, angle)
+		// cameraX goes from -1 to +1 (very roughly)
+		cameraX := 2*(float64(rayIndex)/float64(NumRays)) - 1
+		ra := calculateRay(w, cameraX)
 		r.drawRay(ra, rayIndex)
 	}
-	//r.renderDebug(w)
 
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
@@ -99,30 +97,6 @@ func (r *Renderer) SetPixel(x float64, y float64, c color.RGBA) {
 
 func (r *Renderer) SetActualPixel(x float64, y float64, c color.Color) {
 	r.image.Set(int(x), int(y), c)
-}
-
-func (r *Renderer) renderDebug(w *World) {
-
-	// draw tiles
-	for x := 0; x < w.width; x++ {
-		for y := 0; y < w.height; y++ {
-			t := w.getTile(x, y)
-			if t.block {
-				r.drawTile(x, y, blockColor)
-			} else {
-				r.drawEdgeTile(x, y)
-			}
-		}
-	}
-
-	// draw player
-	r.SetPixel(w.playerPos.x, w.playerPos.y, playerColor)
-
-	// draw player direction
-	angle := w.playerDir * math.Pi / 3
-	dirx := w.playerPos.x + (1 * math.Cos(angle))
-	diry := w.playerPos.y + (1 * math.Sin(angle))
-	r.SetPixel(dirx, diry, dirColor)
 }
 
 func (r *Renderer) drawHitCross(intersection point) {
