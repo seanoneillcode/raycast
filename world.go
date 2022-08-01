@@ -28,6 +28,7 @@ type sprite struct {
 	image    string
 	pos      vector
 	distance float64
+	height   float64
 }
 
 type World struct {
@@ -77,6 +78,13 @@ func NewWorld(width, height int) *World {
 				image: "eye",
 				pos: vector{
 					x: 6,
+					y: 5,
+				},
+			},
+			{
+				image: "eye",
+				pos: vector{
+					x: 5,
 					y: 5,
 				},
 			},

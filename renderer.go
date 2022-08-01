@@ -76,7 +76,7 @@ func (r *Renderer) drawSprites(w *World) {
 		//parameters for scaling and moving the sprites
 		var uDiv = 1.0
 		var vDiv = 1.0
-		var vMove = 0.0
+		var vMove = s.height * TextureHeight
 		vMoveScreen := int(vMove / transformY)
 
 		//calculate height of the sprite on screen
