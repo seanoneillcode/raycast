@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	WindowWidth   = 1024
-	WindowHeight  = 1024
+	WindowWidth   = 800
+	WindowHeight  = 800
 	ScreenWidth   = 256
 	ScreenHeight  = 256
 	PlayerWidth   = 4

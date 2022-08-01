@@ -5,22 +5,22 @@ import "math"
 type ray struct {
 	side     int
 	distance float64
-	wallx    float64
-	dir      point
+	wallX    float64
+	dir      vector
 }
 
 func calculateRay(w *World, cameraX float64) ray {
-	rayStart := point{
+	rayStart := vector{
 		x: w.playerPos.x,
 		y: w.playerPos.y,
 	}
 
-	rayDir := point{
+	rayDir := vector{
 		x: w.playerDir.x + w.plane.x*cameraX,
 		y: w.playerDir.y + w.plane.y*cameraX,
 	}
 
-	rayUnitStepSize := point{
+	rayUnitStepSize := vector{
 		x: math.Abs(1 / rayDir.x),
 		y: math.Abs(1 / rayDir.y),
 	}
@@ -32,27 +32,27 @@ func calculateRay(w *World, cameraX float64) ray {
 		rayUnitStepSize.y = 111111111
 	}
 
-	mapPos := pos{
+	rayMapPos := mapPos{
 		x: int(rayStart.x),
 		y: int(rayStart.y),
 	}
 
-	rayLength := point{}
-	Step := pos{}
+	rayLength := vector{}
+	step := mapPos{}
 
 	if rayDir.x < 0 {
-		Step.x = -1
-		rayLength.x = (rayStart.x - float64(mapPos.x)) * rayUnitStepSize.x
+		step.x = -1
+		rayLength.x = (rayStart.x - float64(rayMapPos.x)) * rayUnitStepSize.x
 	} else {
-		Step.x = 1
-		rayLength.x = (float64(mapPos.x+1) - rayStart.x) * rayUnitStepSize.x
+		step.x = 1
+		rayLength.x = (float64(rayMapPos.x+1) - rayStart.x) * rayUnitStepSize.x
 	}
 	if rayDir.y < 0 {
-		Step.y = -1
-		rayLength.y = (rayStart.y - float64(mapPos.y)) * rayUnitStepSize.y
+		step.y = -1
+		rayLength.y = (rayStart.y - float64(rayMapPos.y)) * rayUnitStepSize.y
 	} else {
-		Step.y = 1
-		rayLength.y = (float64(mapPos.y+1) - rayStart.y) * rayUnitStepSize.y
+		step.y = 1
+		rayLength.y = (float64(rayMapPos.y+1) - rayStart.y) * rayUnitStepSize.y
 	}
 
 	tileFound := false
@@ -63,18 +63,18 @@ func calculateRay(w *World, cameraX float64) ray {
 	for !tileFound && distance < maxDistance {
 
 		if rayLength.x < rayLength.y {
-			mapPos.x += Step.x
+			rayMapPos.x += step.x
 			distance += rayLength.x
 			rayLength.x += rayUnitStepSize.x
 			side = 0
 		} else {
-			mapPos.y += Step.y
+			rayMapPos.y += step.y
 			distance += rayLength.y
 			rayLength.y += rayUnitStepSize.y
 			side = 1
 		}
 
-		t := w.getTile(mapPos.x, mapPos.y)
+		t := w.getTile(rayMapPos.x, rayMapPos.y)
 		if t != nil {
 			if t.block {
 				tileFound = true
@@ -91,18 +91,18 @@ func calculateRay(w *World, cameraX float64) ray {
 		}
 	}
 
-	var wallx float64
+	var wallX float64
 	if side == 0 {
-		wallx = rayStart.y + (perpWallDist * rayDir.y)
+		wallX = rayStart.y + (perpWallDist * rayDir.y)
 	} else {
-		wallx = rayStart.x + (perpWallDist * rayDir.x)
+		wallX = rayStart.x + (perpWallDist * rayDir.x)
 	}
-	wallx -= math.Floor(wallx)
+	wallX -= math.Floor(wallX)
 
 	return ray{
 		distance: perpWallDist,
 		side:     side,
-		wallx:    wallx,
+		wallX:    wallX,
 		dir:      rayDir,
 	}
 }

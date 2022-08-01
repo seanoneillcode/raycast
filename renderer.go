@@ -4,39 +4,123 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 	"image"
 	"image/color"
+	"math"
+	"sort"
 )
 
 type Renderer struct {
 	image    *ebiten.Image
-	textures []image.Image
+	textures map[string]image.Image
+	zbuffer  []float64
 }
 
 func NewRenderer() *Renderer {
 	return &Renderer{
 		image: ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
-		textures: []image.Image{
-			LoadImage("wall-2.png"),
-			LoadImage("floor-1.png"),
-			LoadImage("ceiling.png"),
+		textures: map[string]image.Image{
+			"wall":    LoadImage("wall-2.png"),
+			"floor":   LoadImage("floor-1.png"),
+			"ceiling": LoadImage("ceiling.png"),
+			"eye":     LoadImage("sprite.png"),
 		},
+		zbuffer: make([]float64, ScreenWidth),
 	}
 }
 
 func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 
-	r.drawFloor(w)
+	r.drawFloorAndCeiling(w)
 
 	for rayIndex := 0; rayIndex < NumRays; rayIndex++ {
 		// cameraX goes from -1 to +1 (very roughly)
 		cameraX := 2*(float64(rayIndex)/float64(NumRays)) - 1
 		ra := calculateRay(w, cameraX)
 		r.drawRay(ra, rayIndex)
+		r.zbuffer[rayIndex] = ra.distance
 	}
+
+	r.drawSprites(w)
 
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(GlobalScale, GlobalScale)
 	screen.DrawImage(r.image, op)
+}
+
+func (r *Renderer) drawSprites(w *World) {
+
+	for _, s := range w.sprites {
+		s.distance = (w.playerPos.x-s.pos.x)*(w.playerPos.x-s.pos.x) + (w.playerPos.y-s.pos.y)*(w.playerPos.y-s.pos.y)
+	}
+
+	sort.Slice(w.sprites, func(i, j int) bool {
+		return w.sprites[i].distance > w.sprites[j].distance
+	})
+
+	for _, s := range w.sprites {
+		spriteX := s.pos.x - w.playerPos.x
+		spriteY := s.pos.y - w.playerPos.y
+
+		//transform sprite with the inverse camera matrix
+		// [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+		// [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+		// [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+		invDet := 1.0 / (w.plane.x*w.playerDir.y - w.playerDir.x*w.plane.y) //required for correct matrix multiplication
+
+		transformX := invDet * (w.playerDir.y*spriteX - w.playerDir.x*spriteY)
+		transformY := invDet * (-w.plane.y*spriteX + w.plane.x*spriteY) //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+
+		spriteScreenX := int((NumRays / 2) * (1 + transformX/transformY))
+
+		//parameters for scaling and moving the sprites
+		var uDiv = 1.0
+		var vDiv = 1.0
+		var vMove = 0.0
+		vMoveScreen := int(vMove / transformY)
+
+		//calculate height of the sprite on screen
+		spriteHeight := int(math.Abs(ScreenHeight/(transformY)) / vDiv) //using "transformY" instead of the real distance prevents fisheye
+		//calculate lowest and highest pixel to fill in current stripe
+		drawStartY := (-spriteHeight/2 + ScreenHeight/2) + vMoveScreen
+		if drawStartY < 0 {
+			drawStartY = 0
+		}
+		drawEndY := (spriteHeight/2 + ScreenHeight/2) + vMoveScreen
+		if drawEndY >= ScreenHeight {
+			drawEndY = ScreenHeight - 1
+		}
+
+		//calculate width of the sprite
+		spriteWidth := int(math.Abs(ScreenHeight/(transformY)) / uDiv) // same as height of sprite, given that it's square
+		drawStartX := -spriteWidth/2 + spriteScreenX
+		if drawStartX < 0 {
+			drawStartX = 0
+		}
+		drawEndX := spriteWidth/2 + spriteScreenX
+		if drawEndX > NumRays {
+			drawEndX = NumRays
+		}
+
+		//loop through every vertical stripe of the sprite on screen
+		for stripe := drawStartX; stripe < drawEndX; stripe++ {
+			texX := int(256*(stripe-(-spriteWidth/2+spriteScreenX))*TextureWidth/spriteWidth) / 256
+			//the conditions in the if are:
+			//1) it's in front of camera plane so you don't see things behind you
+			//2) ZBuffer, with perpendicular distance
+			if transformY > 0 && transformY < r.zbuffer[stripe] {
+				for y := drawStartY; y < drawEndY; y++ { //for every pixel of the current stripe
+					d := (y-vMoveScreen)*256 - ScreenHeight*128 + spriteHeight*128 //256 and 128 factors to avoid floats
+					texY := ((d * TextureHeight) / spriteHeight) / 256
+
+					img := r.textures[s.image]
+					c := img.At(texX, texY)
+					r.SetPixel(float64(stripe), float64(y), c)
+				}
+			}
+		}
+
+	}
 }
 
 func (r *Renderer) drawRay(ray ray, index int) {
@@ -53,7 +137,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		drawEnd = ScreenHeight - 1
 	}
 
-	var texX = int(ray.wallx * TextureWidth)
+	var texX = int(ray.wallX * TextureWidth)
 	//flip textures if looking in opposite direction
 	if ray.side == 0 && ray.dir.x > 0 {
 		texX = TextureWidth - texX - 1
@@ -66,79 +150,31 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	step := float64(TextureHeight) / float64(lineHeight)
 	texPos := float64(drawStart-ScreenHeight/2+lineHeight/2) * step
 
-	for y := 0; y < ScreenHeight; y++ {
-		if y > drawStart && y < drawEnd {
-
-			texY := int(texPos) & (TextureHeight - 1)
-			texPos += step
-			img := r.textures[0]
-			c := img.At(texX, texY)
-			if ray.side == 0 {
-				rgba := color.RGBAModel.Convert(c).(color.RGBA)
-				rgba.R = rgba.R / 2
-				rgba.G = rgba.G / 2
-				rgba.B = rgba.B / 2
-				c = rgba
-			}
-			r.SetActualPixel(float64(x), float64(y), c)
-		} else {
-			//if y < ScreenHeight/2 {
-			//	r.SetActualPixel(float64(x), float64(y), skyColor)
-			//} else {
-			//	//r.SetActualPixel(float64(x), float64(y), grassColor)
-			//}
+	for y := drawStart; y < drawEnd; y++ {
+		texY := int(texPos) & (TextureHeight - 1)
+		texPos += step
+		img := r.textures["wall"]
+		c := img.At(texX, texY)
+		if ray.side == 0 {
+			rgba := color.RGBAModel.Convert(c).(color.RGBA)
+			rgba.R = rgba.R / 2
+			rgba.G = rgba.G / 2
+			rgba.B = rgba.B / 2
+			c = rgba
 		}
+		r.SetPixel(float64(x), float64(y), c)
 	}
 }
 
-func (r *Renderer) SetPixel(x float64, y float64, c color.RGBA) {
-	r.image.Set(int(x*TileSize), int(y*TileSize), c)
-}
-
-func (r *Renderer) SetActualPixel(x float64, y float64, c color.Color) {
+func (r *Renderer) SetPixel(x float64, y float64, c color.Color) {
+	_, _, _, a := c.RGBA()
+	if a == 0 {
+		return
+	}
 	r.image.Set(int(x), int(y), c)
 }
 
-func (r *Renderer) drawHitCross(intersection point) {
-	r.SetActualPixel((intersection.x*TileSize)-1, (intersection.y*TileSize)-1, crossColor)
-	r.SetActualPixel((intersection.x*TileSize)+1, (intersection.y*TileSize)-1, crossColor)
-	r.SetActualPixel((intersection.x*TileSize)+1, (intersection.y*TileSize)+1, crossColor)
-	r.SetActualPixel((intersection.x*TileSize)-1, (intersection.y*TileSize)+1, crossColor)
-}
-func (r *Renderer) drawHit(intersection point) {
-	r.SetActualPixel(intersection.x*TileSize, intersection.y*TileSize, crossColor)
-}
-
-func (r *Renderer) drawTile(tx int, ty int, c color.RGBA) {
-	px := tx * TileSize
-	py := ty * TileSize
-
-	for x := px; x < (px + TileSize); x++ {
-		for y := py; y < (py + TileSize); y++ {
-			r.SetActualPixel(float64(x), float64(y), c)
-		}
-	}
-}
-
-func (r *Renderer) drawEdgeTile(tx int, ty int) {
-	px := tx * TileSize
-	py := ty * TileSize
-
-	for x := px; x < (px + TileSize); x++ {
-		for y := py; y < (py + TileSize); y++ {
-			col := emptyColor
-			if x == px {
-				col = edgeColor
-			}
-			if y == py {
-				col = edgeColor
-			}
-			r.SetActualPixel(float64(x), float64(y), col)
-		}
-	}
-}
-
-func (r *Renderer) drawFloor(w *World) {
+func (r *Renderer) drawFloorAndCeiling(w *World) {
 	for y := ScreenHeight / 2; y < ScreenHeight; y++ {
 		// rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
 		rayDirX0 := w.playerDir.x - w.plane.x
@@ -194,14 +230,14 @@ func (r *Renderer) drawFloor(w *World) {
 			floorY += floorStepY
 
 			// floor
-			img := r.textures[1]
+			img := r.textures["floor"]
 			c := img.At(tx, ty)
-			r.SetActualPixel(float64(x), float64(y), c)
+			r.SetPixel(float64(x), float64(y), c)
 
 			// ceiling
-			img = r.textures[2]
+			img = r.textures["ceiling"]
 			c = img.At(tx, ty)
-			r.SetActualPixel(float64(x), float64(ScreenHeight-y-1), c)
+			r.SetPixel(float64(x), float64(ScreenHeight-y-1), c)
 		}
 
 	}

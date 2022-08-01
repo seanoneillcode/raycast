@@ -10,12 +10,12 @@ import (
 const moveAmount = 0.002
 const rotateAmount = 0.0005
 
-type point struct {
+type vector struct {
 	x float64
 	y float64
 }
 
-type pos struct {
+type mapPos struct {
 	x int
 	y int
 }
@@ -24,16 +24,23 @@ type tile struct {
 	block bool
 }
 
-type World struct {
-	width  int
-	height int
-	tiles  [][]*tile
+type sprite struct {
+	image    string
+	pos      vector
+	distance float64
+}
 
-	playerPos       point
-	playerDir       point
-	playerStrafeDir point
+type World struct {
+	width   int
+	height  int
+	tiles   [][]*tile
+	sprites []*sprite
+
+	playerPos       vector
+	playerDir       vector
+	playerStrafeDir vector
 	// the ration of the plane to the playerDir makes the field of view
-	plane       point
+	plane       vector
 	oldMousePos int
 }
 
@@ -42,21 +49,37 @@ func NewWorld(width, height int) *World {
 		width:  width,
 		height: height,
 		tiles:  make([][]*tile, width*height),
-		playerDir: point{
+		playerDir: vector{
 			x: 0,
 			y: -1,
 		},
-		plane: point{
+		plane: vector{
 			x: 0.5,
 			y: 0,
 		},
-		playerStrafeDir: point{
+		playerStrafeDir: vector{
 			x: 1,
 			y: 0,
 		},
-		playerPos: point{
+		playerPos: vector{
 			x: 3,
 			y: 3,
+		},
+		sprites: []*sprite{
+			{
+				image: "eye",
+				pos: vector{
+					x: 5,
+					y: 6,
+				},
+			},
+			{
+				image: "eye",
+				pos: vector{
+					x: 6,
+					y: 5,
+				},
+			},
 		},
 	}
 	for x := 0; x < w.width; x++ {
@@ -73,25 +96,25 @@ func (w *World) Update(delta float64) error {
 
 	// handle input
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		movePlayer(w, delta, point{
+		movePlayer(w, delta, vector{
 			x: w.playerDir.x,
 			y: w.playerDir.y,
 		})
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		movePlayer(w, delta, point{
+		movePlayer(w, delta, vector{
 			x: -w.playerDir.x,
 			y: -w.playerDir.y,
 		})
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		movePlayer(w, delta, point{
+		movePlayer(w, delta, vector{
 			x: -w.playerStrafeDir.x,
 			y: -w.playerStrafeDir.y,
 		})
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		movePlayer(w, delta, point{
+		movePlayer(w, delta, vector{
 			x: w.playerStrafeDir.x,
 			y: w.playerStrafeDir.y,
 		})
@@ -120,7 +143,7 @@ func (w *World) Update(delta float64) error {
 	return nil
 }
 
-func movePlayer(w *World, delta float64, dir point) {
+func movePlayer(w *World, delta float64, dir vector) {
 	movex := dir.x * moveAmount * delta
 	movey := dir.y * moveAmount * delta
 
