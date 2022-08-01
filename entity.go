@@ -1,5 +1,10 @@
 package raycast
 
+import (
+	"fmt"
+	"math"
+)
+
 type sprite struct {
 	image    string
 	pos      vector
@@ -10,6 +15,7 @@ type sprite struct {
 type entity struct {
 	sprite *sprite
 	pos    vector
+	width  float64
 	dir    vector
 	speed  float64
 	health int
@@ -23,6 +29,8 @@ const (
 	NothingEntityState EntityState = "nothing"
 )
 
+const entitySpeed = 0.002
+
 func NewEntity(img string, pos vector) *entity {
 	return &entity{
 		sprite: &sprite{
@@ -31,9 +39,10 @@ func NewEntity(img string, pos vector) *entity {
 		},
 		pos:    pos,
 		dir:    vector{},
-		speed:  0.002,
+		speed:  entitySpeed,
 		health: 2,
 		state:  NothingEntityState,
+		width:  (1.0 / TextureWidth) * 20.0,
 	}
 }
 
@@ -70,6 +79,14 @@ func (r *bullet) Update(w *World, delta float64) {
 		r.entity.state = DeadEntityState
 		r.entity.undoLastMove(delta)
 	}
+	for _, e := range w.enemies {
+		if collides(r.entity, e.entity) {
+			r.entity.state = DeadEntityState
+			r.entity.undoLastMove(delta)
+			e.entity.health -= 1
+			// do more here, i.e. show effects
+		}
+	}
 }
 
 type enemy struct {
@@ -80,4 +97,16 @@ type enemy struct {
 func (r *enemy) Update(delta float64) {
 	r.entity.Update(delta)
 	// AI behaviour
+}
+
+func collides(e1, e2 *entity) bool {
+	if e1.state == DeadEntityState || e2.state == DeadEntityState {
+		return false
+	}
+	withinX := math.Abs(e1.pos.x-e2.pos.x) < ((e1.width + e2.width) / 2)
+	withinY := math.Abs(e1.pos.y-e2.pos.y) < ((e1.width + e2.width) / 2)
+	if withinX && withinY {
+		fmt.Printf("entity %v collided with entity %v\n ", e1.sprite.image, e2.sprite.image)
+	}
+	return withinX && withinY
 }

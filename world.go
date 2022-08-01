@@ -48,14 +48,13 @@ func NewWorld(width, height int) *World {
 		}),
 		enemies: []*enemy{
 			{
-				entity: NewEntity("eye", vector{x: 5, y: 6}),
+				entity: NewEntity("eye", vector{x: 2, y: 2}),
 			},
-		},
-		bullets: []*bullet{
 			{
-				entity: NewEntity("bullet", vector{x: 10, y: 6}),
+				entity: NewEntity("eye", vector{x: 13, y: 7}),
 			},
 		},
+		bullets: []*bullet{},
 	}
 	for x := 0; x < w.width; x++ {
 		w.tiles[x] = make([]*tile, width*height)
@@ -140,11 +139,9 @@ func (w *World) ShootBullet(pos vector, dir vector) {
 	}
 	b.entity.dir = dir
 	b.entity.speed = bulletSpeed
+	b.entity.width = (1.0 / TextureWidth) * 4.0
 	w.bullets = append(w.bullets, b)
 	fmt.Printf("number of bullets in world: %v \n", len(w.bullets))
-	for i, b := range w.bullets {
-		fmt.Printf("bullet %v pos %v\n", i, b.entity.pos)
-	}
 }
 
 func initWorld(w *World) {
