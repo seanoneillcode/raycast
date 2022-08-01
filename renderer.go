@@ -22,6 +22,7 @@ func NewRenderer() *Renderer {
 			"floor":   LoadImage("floor-1.png"),
 			"ceiling": LoadImage("ceiling.png"),
 			"eye":     LoadImage("sprite.png"),
+			"bullet":  LoadImage("bullet.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -49,15 +50,24 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 
 func (r *Renderer) drawSprites(w *World) {
 
-	for _, s := range w.sprites {
+	var sprites []*sprite
+
+	for _, e := range w.enemies {
+		sprites = append(sprites, e.entity.sprite)
+	}
+	for _, b := range w.bullets {
+		sprites = append(sprites, b.entity.sprite)
+	}
+
+	for _, s := range sprites {
 		s.distance = (w.playerPos.x-s.pos.x)*(w.playerPos.x-s.pos.x) + (w.playerPos.y-s.pos.y)*(w.playerPos.y-s.pos.y)
 	}
 
-	sort.Slice(w.sprites, func(i, j int) bool {
-		return w.sprites[i].distance > w.sprites[j].distance
+	sort.Slice(sprites, func(i, j int) bool {
+		return sprites[i].distance > sprites[j].distance
 	})
 
-	for _, s := range w.sprites {
+	for _, s := range sprites {
 		spriteX := s.pos.x - w.playerPos.x
 		spriteY := s.pos.y - w.playerPos.y
 

@@ -24,18 +24,12 @@ type tile struct {
 	block bool
 }
 
-type sprite struct {
-	image    string
-	pos      vector
-	distance float64
-	height   float64
-}
-
 type World struct {
 	width   int
 	height  int
 	tiles   [][]*tile
-	sprites []*sprite
+	bullets []*bullet
+	enemies []*enemy
 
 	playerPos       vector
 	playerDir       vector
@@ -66,27 +60,14 @@ func NewWorld(width, height int) *World {
 			x: 3,
 			y: 3,
 		},
-		sprites: []*sprite{
+		enemies: []*enemy{
 			{
-				image: "eye",
-				pos: vector{
-					x: 5,
-					y: 6,
-				},
+				entity: NewEntity("eye", vector{x: 5, y: 6}),
 			},
+		},
+		bullets: []*bullet{
 			{
-				image: "eye",
-				pos: vector{
-					x: 6,
-					y: 5,
-				},
-			},
-			{
-				image: "eye",
-				pos: vector{
-					x: 5,
-					y: 5,
-				},
+				entity: NewEntity("bullet", vector{x: 3, y: 3}),
 			},
 		},
 	}
@@ -101,6 +82,13 @@ func NewWorld(width, height int) *World {
 }
 
 func (w *World) Update(delta float64) error {
+
+	for _, e := range w.enemies {
+		e.Update(delta)
+	}
+	for _, b := range w.bullets {
+		b.Update(delta)
+	}
 
 	// handle input
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
