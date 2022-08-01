@@ -60,7 +60,7 @@ func (r *Renderer) drawSprites(w *World) {
 	}
 
 	for _, s := range sprites {
-		s.distance = (w.playerPos.x-s.pos.x)*(w.playerPos.x-s.pos.x) + (w.playerPos.y-s.pos.y)*(w.playerPos.y-s.pos.y)
+		s.distance = (w.player.pos.x-s.pos.x)*(w.player.pos.x-s.pos.x) + (w.player.pos.y-s.pos.y)*(w.player.pos.y-s.pos.y)
 	}
 
 	sort.Slice(sprites, func(i, j int) bool {
@@ -68,18 +68,18 @@ func (r *Renderer) drawSprites(w *World) {
 	})
 
 	for _, s := range sprites {
-		spriteX := s.pos.x - w.playerPos.x
-		spriteY := s.pos.y - w.playerPos.y
+		spriteX := s.pos.x - w.player.pos.x
+		spriteY := s.pos.y - w.player.pos.y
 
 		//transform sprite with the inverse camera matrix
 		// [ planeX   dirX ] -1                                       [ dirY      -dirX ]
 		// [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
 		// [ planeY   dirY ]                                          [ -planeY  planeX ]
 
-		invDet := 1.0 / (w.plane.x*w.playerDir.y - w.playerDir.x*w.plane.y) //required for correct matrix multiplication
+		invDet := 1.0 / (w.player.plane.x*w.player.dir.y - w.player.dir.x*w.player.plane.y) //required for correct matrix multiplication
 
-		transformX := invDet * (w.playerDir.y*spriteX - w.playerDir.x*spriteY)
-		transformY := invDet * (-w.plane.y*spriteX + w.plane.x*spriteY) //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+		transformX := invDet * (w.player.dir.y*spriteX - w.player.dir.x*spriteY)
+		transformY := invDet * (-w.player.plane.y*spriteX + w.player.plane.x*spriteY) //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
 
 		spriteScreenX := int((NumRays / 2) * (1 + transformX/transformY))
 
@@ -187,10 +187,10 @@ func (r *Renderer) SetPixel(x float64, y float64, c color.Color) {
 func (r *Renderer) drawFloorAndCeiling(w *World) {
 	for y := ScreenHeight / 2; y < ScreenHeight; y++ {
 		// rayDir for leftmost ray (x = 0) and rightmost ray (x = w)
-		rayDirX0 := w.playerDir.x - w.plane.x
-		rayDirY0 := w.playerDir.y - w.plane.y
-		rayDirX1 := w.playerDir.x + w.plane.x
-		rayDirY1 := w.playerDir.y + w.plane.y
+		rayDirX0 := w.player.dir.x - w.player.plane.x
+		rayDirY0 := w.player.dir.y - w.player.plane.y
+		rayDirX1 := w.player.dir.x + w.player.plane.x
+		rayDirY1 := w.player.dir.y + w.player.plane.y
 
 		// Current y position compared to the center of the screen (the horizon)
 		p := y - ScreenHeight/2
@@ -224,8 +224,8 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 		floorStepY := rowDistance * (rayDirY1 - rayDirY0) / ScreenWidth
 
 		// real world coordinates of the leftmost column. This will be updated as we step to the right.
-		floorX := w.playerPos.x + rowDistance*rayDirX0
-		floorY := w.playerPos.y + rowDistance*rayDirY0
+		floorX := w.player.pos.x + rowDistance*rayDirX0
+		floorY := w.player.pos.y + rowDistance*rayDirY0
 
 		for x := 0; x < ScreenWidth; x++ {
 			// the cell coord is simply got from the integer parts of floorX and floorY

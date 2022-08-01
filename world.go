@@ -1,12 +1,5 @@
 package raycast
 
-import (
-	"errors"
-	"math"
-
-	"github.com/hajimehoshi/ebiten/v2"
-)
-
 const moveAmount = 0.002
 const rotateAmount = 0.0005
 
@@ -31,12 +24,7 @@ type World struct {
 	bullets []*bullet
 	enemies []*enemy
 
-	playerPos       vector
-	playerDir       vector
-	playerStrafeDir vector
-	// the ration of the plane to the playerDir makes the field of view
-	plane       vector
-	oldMousePos int
+	player *player
 }
 
 func NewWorld(width, height int) *World {
@@ -44,22 +32,10 @@ func NewWorld(width, height int) *World {
 		width:  width,
 		height: height,
 		tiles:  make([][]*tile, width*height),
-		playerDir: vector{
-			x: 0,
-			y: -1,
-		},
-		plane: vector{
-			x: 0.5,
-			y: 0,
-		},
-		playerStrafeDir: vector{
-			x: 1,
-			y: 0,
-		},
-		playerPos: vector{
-			x: 3,
-			y: 3,
-		},
+		player: NewPlayer(vector{
+			x: 5,
+			y: 6,
+		}),
 		enemies: []*enemy{
 			{
 				entity: NewEntity("eye", vector{x: 5, y: 6}),
@@ -67,7 +43,7 @@ func NewWorld(width, height int) *World {
 		},
 		bullets: []*bullet{
 			{
-				entity: NewEntity("bullet", vector{x: 3, y: 3}),
+				entity: NewEntity("bullet", vector{x: 10, y: 6}),
 			},
 		},
 	}
@@ -89,75 +65,12 @@ func (w *World) Update(delta float64) error {
 	for _, b := range w.bullets {
 		b.Update(delta)
 	}
-
-	// handle input
-	if ebiten.IsKeyPressed(ebiten.KeyW) {
-		movePlayer(w, delta, vector{
-			x: w.playerDir.x,
-			y: w.playerDir.y,
-		})
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyS) {
-		movePlayer(w, delta, vector{
-			x: -w.playerDir.x,
-			y: -w.playerDir.y,
-		})
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyA) {
-		movePlayer(w, delta, vector{
-			x: -w.playerStrafeDir.x,
-			y: -w.playerStrafeDir.y,
-		})
-	}
-	if ebiten.IsKeyPressed(ebiten.KeyD) {
-		movePlayer(w, delta, vector{
-			x: w.playerStrafeDir.x,
-			y: w.playerStrafeDir.y,
-		})
+	err := w.player.Update(w, delta)
+	if err != nil {
+		return err
 	}
 
-	// mouse look
-	mx, _ := ebiten.CursorPosition()
-	mouseMove := w.oldMousePos - mx
-	rotation := rotateAmount * delta * float64(mouseMove)
-
-	oldDirX := w.playerDir.x
-	w.playerDir.x = w.playerDir.x*math.Cos(-rotation) - w.playerDir.y*math.Sin(-rotation)
-	w.playerDir.y = oldDirX*math.Sin(-rotation) + w.playerDir.y*math.Cos(-rotation)
-	oldPlaneX := w.plane.x
-	w.plane.x = w.plane.x*math.Cos(-rotation) - w.plane.y*math.Sin(-rotation)
-	w.plane.y = oldPlaneX*math.Sin(-rotation) + w.plane.y*math.Cos(-rotation)
-	oldStrafeX := w.playerStrafeDir.x
-	w.playerStrafeDir.x = w.playerStrafeDir.x*math.Cos(-rotation) - w.playerStrafeDir.y*math.Sin(-rotation)
-	w.playerStrafeDir.y = oldStrafeX*math.Sin(-rotation) + w.playerStrafeDir.y*math.Cos(-rotation)
-	w.oldMousePos = mx
-
-	// syscalls
-	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
-		return errors.New("normal escape termination")
-	}
 	return nil
-}
-
-func movePlayer(w *World, delta float64, dir vector) {
-	movex := dir.x * moveAmount * delta
-	movey := dir.y * moveAmount * delta
-
-	newposx := w.playerPos.x + (movex * PlayerWidth)
-	newposy := w.playerPos.y
-
-	tilex := w.getTile(int(newposx), int(newposy))
-	if tilex == nil || !tilex.block {
-		w.playerPos.x += movex
-	}
-
-	newposx = w.playerPos.x
-	newposy = w.playerPos.y + (movey * PlayerWidth)
-
-	tiley := w.getTile(int(newposx), int(newposy))
-	if tiley == nil || !tiley.block {
-		w.playerPos.y += movey
-	}
 }
 
 func (w *World) getTileAtPoint(x, y float64) *tile {

@@ -11,13 +11,13 @@ type ray struct {
 
 func calculateRay(w *World, cameraX float64) ray {
 	rayStart := vector{
-		x: w.playerPos.x,
-		y: w.playerPos.y,
+		x: w.player.pos.x,
+		y: w.player.pos.y,
 	}
 
 	rayDir := vector{
-		x: w.playerDir.x + w.plane.x*cameraX,
-		y: w.playerDir.y + w.plane.y*cameraX,
+		x: w.player.dir.x + w.player.plane.x*cameraX,
+		y: w.player.dir.y + w.player.plane.y*cameraX,
 	}
 
 	rayUnitStepSize := vector{
