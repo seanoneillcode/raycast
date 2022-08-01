@@ -2,16 +2,20 @@ package raycast
 
 import (
 	"errors"
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"math"
 )
 
 type player struct {
-	pos         vector
-	dir         vector
-	strafeDir   vector
-	plane       vector
-	oldMousePos int
+	pos           vector
+	dir           vector
+	strafeDir     vector
+	plane         vector
+	oldMousePos   int
+	ammo          int
+	fireRateTimer float64
+	fireRateMax   float64
 }
 
 func NewPlayer(pos vector) *player {
@@ -28,7 +32,9 @@ func NewPlayer(pos vector) *player {
 			x: 1,
 			y: 0,
 		},
-		pos: pos,
+		pos:         pos,
+		fireRateMax: 100.0, // millis
+		ammo:        10,
 	}
 }
 
@@ -58,6 +64,18 @@ func (r *player) Update(w *World, delta float64) error {
 			y: r.strafeDir.y,
 		})
 	}
+	// change to pressed with fire rate
+	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
+		// check for ammo
+		if r.ammo > 0 && r.fireRateTimer < 0 {
+			fmt.Printf("fired weapon: ammo %v; fireRateTimer: %v \n", r.ammo, r.fireRateTimer)
+			r.ammo -= 1
+			r.fireRateTimer = r.fireRateMax
+			posInFrontOfPlayer := addVector(r.pos, r.dir)
+			w.ShootBullet(posInFrontOfPlayer, r.dir)
+		}
+	}
+	r.fireRateTimer -= delta
 
 	// mouse look
 	mx, _ := ebiten.CursorPosition()

@@ -1,11 +1,21 @@
 package raycast
 
+import "fmt"
+
 const moveAmount = 0.002
 const rotateAmount = 0.0005
+const bulletSpeed = 0.01
 
 type vector struct {
 	x float64
 	y float64
+}
+
+func addVector(v1, v2 vector) vector {
+	return vector{
+		x: v1.x + v2.x,
+		y: v1.y + v2.y,
+	}
 }
 
 type mapPos struct {
@@ -59,11 +69,26 @@ func NewWorld(width, height int) *World {
 
 func (w *World) Update(delta float64) error {
 
+	hasDead := false
 	for _, e := range w.enemies {
 		e.Update(delta)
+		if e.entity.state == DeadEntityState {
+			hasDead = true
+		}
 	}
+	if hasDead {
+		cleanDeadEnemy(w)
+	}
+
+	hasDead = false
 	for _, b := range w.bullets {
-		b.Update(delta)
+		b.Update(w, delta)
+		if b.entity.state == DeadEntityState {
+			hasDead = true
+		}
+	}
+	if hasDead {
+		cleanDeadBullet(w)
 	}
 	err := w.player.Update(w, delta)
 	if err != nil {
@@ -73,8 +98,30 @@ func (w *World) Update(delta float64) error {
 	return nil
 }
 
-func (w *World) getTileAtPoint(x, y float64) *tile {
-	return w.getTile(int(x), int(y))
+func cleanDeadBullet(w *World) {
+	temp := w.bullets[:0]
+	for _, b := range w.bullets {
+		if b.entity.state != DeadEntityState {
+			temp = append(temp, b)
+		}
+	}
+	w.bullets = temp
+}
+
+func cleanDeadEnemy(w *World) {
+	temp := w.enemies[:0]
+	for _, b := range w.enemies {
+		if b.entity.state != DeadEntityState {
+			temp = append(temp, b)
+		} else {
+			fmt.Printf("removing dead entity: %v", b.entity.sprite)
+		}
+	}
+	w.enemies = temp
+}
+
+func (w *World) getTileAtPoint(pos vector) *tile {
+	return w.getTile(int(pos.x), int(pos.y))
 }
 
 func (w *World) getTile(x, y int) *tile {
@@ -85,6 +132,19 @@ func (w *World) getTile(x, y int) *tile {
 		return nil
 	}
 	return w.tiles[x][y]
+}
+
+func (w *World) ShootBullet(pos vector, dir vector) {
+	b := &bullet{
+		entity: NewEntity("bullet", pos),
+	}
+	b.entity.dir = dir
+	b.entity.speed = bulletSpeed
+	w.bullets = append(w.bullets, b)
+	fmt.Printf("number of bullets in world: %v \n", len(w.bullets))
+	for i, b := range w.bullets {
+		fmt.Printf("bullet %v pos %v\n", i, b.entity.pos)
+	}
 }
 
 func initWorld(w *World) {

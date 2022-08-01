@@ -47,7 +47,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.renderer.Render(screen, g.world)
 	ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f", ebiten.CurrentFPS()))
-
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("AMMO: %d", g.world.player.ammo), 0, ScreenHeight-20)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
