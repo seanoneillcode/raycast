@@ -3,6 +3,7 @@ package raycast
 import (
 	"errors"
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"math"
 )
 
@@ -65,15 +66,21 @@ func (r *player) Update(w *World, delta float64) error {
 			y: r.strafeDir.y,
 		})
 	}
-	if ebiten.IsKeyPressed(ebiten.KeyE) {
+	if inpututil.IsKeyJustPressed(ebiten.KeyE) {
 		checkPos := vector{
 			x: r.pos.x + (r.dir.x * checkDistance),
 			y: r.pos.y + (r.dir.y * checkDistance),
 		}
 		t := w.getTileAtPoint(checkPos)
 		if t.door {
-			t.door = false
-			t.block = false
+			if t.block {
+				t.block = false
+			} else {
+				playerT := w.getTileAtPoint(r.pos)
+				if playerT != t {
+					t.block = true
+				}
+			}
 		}
 	}
 	// change to pressed with fire rate

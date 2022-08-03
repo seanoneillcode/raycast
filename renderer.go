@@ -18,12 +18,13 @@ func NewRenderer() *Renderer {
 	return &Renderer{
 		image: ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
 		textures: map[string]image.Image{
-			"wall":    LoadImage("wall-2.png"),
-			"floor":   LoadImage("floor-1.png"),
-			"ceiling": LoadImage("ceiling.png"),
-			"eye":     LoadImage("sprite.png"),
-			"bullet":  LoadImage("bullet.png"),
-			"door":    LoadImage("door.png"),
+			"wall":       LoadImage("wall-2.png"),
+			"floor":      LoadImage("floor-1.png"),
+			"ceiling":    LoadImage("ceiling.png"),
+			"eye":        LoadImage("sprite.png"),
+			"bullet":     LoadImage("bullet.png"),
+			"door":       LoadImage("door.png"),
+			"door-floor": LoadImage("door-floor.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -233,6 +234,12 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 			cellX := (int)(floorX)
 			cellY := (int)(floorY)
 
+			t := w.getTile(cellX, cellY)
+			texture := "floor"
+			if t != nil && t.door {
+				texture = "door-floor"
+			}
+
 			// get the texture coordinate from the fractional part
 			tx := (int)(TextureWidth*(floorX-float64(cellX))) & (TextureWidth - 1)
 			ty := (int)(TextureHeight*(floorY-float64(cellY))) & (TextureHeight - 1)
@@ -241,7 +248,7 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 			floorY += floorStepY
 
 			// floor
-			img := r.textures["floor"]
+			img := r.textures[texture]
 			c := img.At(tx, ty)
 			r.SetPixel(float64(x), float64(y), c)
 
