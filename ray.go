@@ -80,12 +80,9 @@ func calculateRay(w *World, cameraX float64) ray {
 
 		t := w.getTile(rayMapPos.x, rayMapPos.y)
 		if t != nil {
+			texture = t.wallTex
 			if t.block {
 				tileFound = true
-				texture = "wall"
-				if t.door {
-					texture = "door"
-				}
 			}
 		}
 	}

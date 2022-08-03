@@ -24,8 +24,11 @@ type mapPos struct {
 }
 
 type tile struct {
-	block bool
-	door  bool
+	block      bool
+	door       bool
+	floorTex   string
+	wallTex    string
+	ceilingTex string
 }
 
 type World struct {
@@ -147,11 +150,11 @@ func initWorld(w *World) {
 
 	nums := [][]uint8{
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1},
-		{1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1},
-		{1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 1, 1},
+		{1, 3, 3, 3, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1},
+		{1, 3, 3, 3, 1, 0, 0, 1, 0, 0, 3, 0, 1, 0, 0, 1},
+		{1, 3, 3, 3, 2, 0, 0, 1, 3, 0, 0, 0, 1, 0, 1, 1},
+		{1, 1, 1, 1, 1, 0, 0, 1, 3, 3, 0, 3, 0, 0, 0, 1},
+		{1, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 3, 1, 0, 1, 1},
 		{1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1},
 		{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
 		{1, 0, 1, 1, 2, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1},
@@ -165,12 +168,27 @@ func initWorld(w *World) {
 
 	for ix, x := range nums {
 		for iy, y := range x {
+			if y == 0 {
+				w.tiles[ix][iy].wallTex = "wall"
+				w.tiles[ix][iy].floorTex = "floor"
+				w.tiles[ix][iy].ceilingTex = "ceiling"
+			}
 			if y == 1 {
 				w.tiles[ix][iy].block = true
+				w.tiles[ix][iy].wallTex = "wall"
+				w.tiles[ix][iy].floorTex = "floor"
+				w.tiles[ix][iy].ceilingTex = "ceiling"
 			}
 			if y == 2 {
 				w.tiles[ix][iy].block = true
 				w.tiles[ix][iy].door = true
+				w.tiles[ix][iy].wallTex = "door"
+				w.tiles[ix][iy].floorTex = "door-floor"
+				w.tiles[ix][iy].ceilingTex = "door-floor"
+			}
+			if y == 3 {
+				w.tiles[ix][iy].wallTex = "wall"
+				w.tiles[ix][iy].floorTex = "floor"
 			}
 		}
 	}

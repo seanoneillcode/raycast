@@ -9,14 +9,16 @@ import (
 )
 
 type Renderer struct {
-	image    *ebiten.Image
-	textures map[string]image.Image
-	zbuffer  []float64
+	background *ebiten.Image
+	image      *ebiten.Image
+	textures   map[string]image.Image
+	zbuffer    []float64
 }
 
 func NewRenderer() *Renderer {
 	return &Renderer{
-		image: ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
+		background: ebiten.NewImageFromImage(LoadImage("background.png")),
+		image:      ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
 		textures: map[string]image.Image{
 			"wall":       LoadImage("wall-2.png"),
 			"floor":      LoadImage("floor-1.png"),
@@ -31,6 +33,8 @@ func NewRenderer() *Renderer {
 }
 
 func (r *Renderer) Render(screen *ebiten.Image, w *World) {
+	r.image.Clear()
+	r.drawSky(w)
 
 	r.drawFloorAndCeiling(w)
 
@@ -48,6 +52,27 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(GlobalScale, GlobalScale)
 	screen.DrawImage(r.image, op)
+}
+
+func (r *Renderer) drawSky(w *World) {
+	angle := math.Atan2(w.player.dir.y, w.player.dir.x)
+	angle = (angle + (math.Pi)) / (2 * math.Pi)
+
+	for x := 0; x < ScreenWidth; x++ {
+		for y := 0; y < ScreenHeight; y++ {
+
+			xoffset := x - int(8*angle*ScreenWidth)
+			xoffset = xoffset % ScreenWidth
+			if xoffset > ScreenWidth {
+				xoffset -= ScreenWidth
+			}
+			if xoffset < 0 {
+				xoffset += ScreenWidth
+			}
+			c := r.background.At(x, y)
+			r.SetPixel(float64(xoffset), float64(y), c)
+		}
+	}
 }
 
 func (r *Renderer) drawSprites(w *World) {
@@ -157,6 +182,11 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	if ray.side == 1 && ray.dir.y < 0 {
 		texX = TextureWidth - texX - 1
 	}
+	texture := "wall"
+	if ray.texture != "" {
+		texture = ray.texture
+	}
+	img := r.textures[texture]
 
 	x := index
 	step := float64(TextureHeight) / float64(lineHeight)
@@ -165,7 +195,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	for y := drawStart; y < drawEnd; y++ {
 		texY := int(texPos) & (TextureHeight - 1)
 		texPos += step
-		img := r.textures[ray.texture]
+
 		c := img.At(texX, texY)
 		if ray.side == 0 {
 			rgba := color.RGBAModel.Convert(c).(color.RGBA)
@@ -235,9 +265,11 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 			cellY := (int)(floorY)
 
 			t := w.getTile(cellX, cellY)
-			texture := "floor"
-			if t != nil && t.door {
-				texture = "door-floor"
+			floorTex := ""
+			ceilingTex := ""
+			if t != nil {
+				floorTex = t.floorTex
+				ceilingTex = t.ceilingTex
 			}
 
 			// get the texture coordinate from the fractional part
@@ -247,15 +279,17 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 			floorX += floorStepX
 			floorY += floorStepY
 
-			// floor
-			img := r.textures[texture]
-			c := img.At(tx, ty)
-			r.SetPixel(float64(x), float64(y), c)
+			if floorTex != "" {
+				img := r.textures[floorTex]
+				c := img.At(tx, ty)
+				r.SetPixel(float64(x), float64(y), c)
+			}
+			if ceilingTex != "" {
+				img := r.textures[ceilingTex]
+				c := img.At(tx, ty)
+				r.SetPixel(float64(x), float64(ScreenHeight-y-1), c)
+			}
 
-			// ceiling
-			img = r.textures["ceiling"]
-			c = img.At(tx, ty)
-			r.SetPixel(float64(x), float64(ScreenHeight-y-1), c)
 		}
 
 	}
