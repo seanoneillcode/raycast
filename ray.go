@@ -1,12 +1,15 @@
 package raycast
 
-import "math"
+import (
+	"math"
+)
 
 type ray struct {
 	side     int
 	distance float64
 	wallX    float64
 	dir      vector
+	texture  string
 }
 
 func calculateRay(w *World, cameraX float64) ray {
@@ -59,6 +62,7 @@ func calculateRay(w *World, cameraX float64) ray {
 	maxDistance := 256.0
 	distance := 0.0
 
+	var texture string
 	var side = 0
 	for !tileFound && distance < maxDistance {
 
@@ -78,6 +82,10 @@ func calculateRay(w *World, cameraX float64) ray {
 		if t != nil {
 			if t.block {
 				tileFound = true
+				texture = "wall"
+				if t.door {
+					texture = "door"
+				}
 			}
 		}
 	}
@@ -104,5 +112,6 @@ func calculateRay(w *World, cameraX float64) ray {
 		side:     side,
 		wallX:    wallX,
 		dir:      rayDir,
+		texture:  texture,
 	}
 }

@@ -23,6 +23,7 @@ func NewRenderer() *Renderer {
 			"ceiling": LoadImage("ceiling.png"),
 			"eye":     LoadImage("sprite.png"),
 			"bullet":  LoadImage("bullet.png"),
+			"door":    LoadImage("door.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -163,7 +164,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	for y := drawStart; y < drawEnd; y++ {
 		texY := int(texPos) & (TextureHeight - 1)
 		texPos += step
-		img := r.textures["wall"]
+		img := r.textures[ray.texture]
 		c := img.At(texX, texY)
 		if ray.side == 0 {
 			rgba := color.RGBAModel.Convert(c).(color.RGBA)

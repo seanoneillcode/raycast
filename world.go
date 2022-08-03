@@ -25,6 +25,7 @@ type mapPos struct {
 
 type tile struct {
 	block bool
+	door  bool
 }
 
 type World struct {
@@ -112,8 +113,6 @@ func cleanDeadEnemy(w *World) {
 	for _, b := range w.enemies {
 		if b.entity.state != DeadEntityState {
 			temp = append(temp, b)
-		} else {
-			fmt.Printf("removing dead entity: %v", b.entity.sprite)
 		}
 	}
 	w.enemies = temp
@@ -150,12 +149,12 @@ func initWorld(w *World) {
 		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
 		{1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1},
 		{1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1},
+		{1, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1},
 		{1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1},
+		{1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1, 0, 1, 1},
 		{1, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1},
 		{1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1},
-		{1, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1},
+		{1, 0, 1, 1, 2, 0, 0, 0, 1, 0, 1, 0, 1, 1, 1, 1},
 		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 		{1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
 		{1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
@@ -168,6 +167,10 @@ func initWorld(w *World) {
 		for iy, y := range x {
 			if y == 1 {
 				w.tiles[ix][iy].block = true
+			}
+			if y == 2 {
+				w.tiles[ix][iy].block = true
+				w.tiles[ix][iy].door = true
 			}
 		}
 	}

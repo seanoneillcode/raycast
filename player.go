@@ -2,10 +2,11 @@ package raycast
 
 import (
 	"errors"
-	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
 	"math"
 )
+
+const checkDistance = 0.5
 
 type player struct {
 	pos           vector
@@ -64,11 +65,21 @@ func (r *player) Update(w *World, delta float64) error {
 			y: r.strafeDir.y,
 		})
 	}
+	if ebiten.IsKeyPressed(ebiten.KeyE) {
+		checkPos := vector{
+			x: r.pos.x + (r.dir.x * checkDistance),
+			y: r.pos.y + (r.dir.y * checkDistance),
+		}
+		t := w.getTileAtPoint(checkPos)
+		if t.door {
+			t.door = false
+			t.block = false
+		}
+	}
 	// change to pressed with fire rate
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		// check for ammo
 		if r.ammo > 0 && r.fireRateTimer < 0 {
-			fmt.Printf("fired weapon: ammo %v; fireRateTimer: %v \n", r.ammo, r.fireRateTimer)
 			r.ammo -= 1
 			r.fireRateTimer = r.fireRateMax
 			posInFrontOfPlayer := addVector(r.pos, r.dir)
