@@ -58,19 +58,21 @@ func (r *Renderer) drawSky(w *World) {
 	angle := math.Atan2(w.player.dir.y, w.player.dir.x)
 	angle = (angle + (math.Pi)) / (2 * math.Pi)
 
+	var doubleWidth = ScreenWidth * 2
+
 	for x := 0; x < ScreenWidth; x++ {
 		for y := 0; y < ScreenHeight; y++ {
 
-			xoffset := x - int(8*angle*ScreenWidth)
-			xoffset = xoffset % ScreenWidth
-			if xoffset > ScreenWidth {
-				xoffset -= ScreenWidth
+			xoffset := x + int(8*angle*ScreenWidth)
+			xoffset = xoffset % doubleWidth
+			if xoffset > doubleWidth {
+				xoffset -= doubleWidth
 			}
 			if xoffset < 0 {
-				xoffset += ScreenWidth
+				xoffset += doubleWidth
 			}
-			c := r.background.At(x, y)
-			r.SetPixel(float64(xoffset), float64(y), c)
+			c := r.background.At(xoffset, y)
+			r.SetPixel(float64(x), float64(y), c)
 		}
 	}
 }
