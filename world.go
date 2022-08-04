@@ -1,7 +1,5 @@
 package raycast
 
-import "fmt"
-
 const moveAmount = 0.002
 const rotateAmount = 0.0005
 const bulletSpeed = 0.01
@@ -38,6 +36,7 @@ type World struct {
 	bullets []*bullet
 	enemies []*enemy
 	pickups []*pickup
+	effects []*effect
 
 	player *player
 }
@@ -53,13 +52,14 @@ func NewWorld(width, height int) *World {
 		}),
 		enemies: []*enemy{
 			{
-				entity: NewEntity("eye", vector{x: 1, y: 3}),
+				entity: NewEntity("eye", vector{x: 1.5, y: 3}),
 			},
 			{
 				entity: NewEntity("eye", vector{x: 13, y: 7}),
 			},
 		},
 		bullets: []*bullet{},
+		effects: []*effect{},
 		pickups: []*pickup{
 			{
 				entity:     NewEntity("ammo", vector{x: 2, y: 2}),
@@ -117,6 +117,18 @@ func (w *World) Update(delta float64) error {
 	if hasDead {
 		cleanDeadPickup(w)
 	}
+
+	hasDead = false
+	for _, b := range w.effects {
+		b.Update(delta)
+		if b.entity.state == DeadEntityState {
+			hasDead = true
+		}
+	}
+	if hasDead {
+		cleanDeadEffect(w)
+	}
+
 	err := w.player.Update(w, delta)
 	if err != nil {
 		return err
@@ -133,6 +145,16 @@ func cleanDeadPickup(w *World) {
 		}
 	}
 	w.pickups = temp
+}
+
+func cleanDeadEffect(w *World) {
+	temp := w.effects[:0]
+	for _, b := range w.effects {
+		if b.entity.state != DeadEntityState {
+			temp = append(temp, b)
+		}
+	}
+	w.effects = temp
 }
 
 func cleanDeadBullet(w *World) {
@@ -170,14 +192,18 @@ func (w *World) getTile(x, y int) *tile {
 }
 
 func (w *World) ShootBullet(pos vector, dir vector) {
-	b := &bullet{
-		entity: NewEntity("bullet", pos),
+	w.bullets = append(w.bullets, NewBullet(pos, dir))
+}
+
+func (w *World) AddEffect(image string, pos vector) {
+	var timing float64
+	var numFrames int
+	switch image {
+	case "bullet-hit":
+		timing = 0.1 * 1000
+		numFrames = 4
 	}
-	b.entity.dir = dir
-	b.entity.speed = bulletSpeed
-	b.entity.width = (1.0 / TextureWidth) * 4.0
-	w.bullets = append(w.bullets, b)
-	fmt.Printf("number of bullets in world: %v \n", len(w.bullets))
+	w.effects = append(w.effects, NewEffect(image, pos, timing, numFrames))
 }
 
 func initWorld(w *World) {

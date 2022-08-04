@@ -6,10 +6,30 @@ import (
 )
 
 type sprite struct {
-	image    string
-	pos      vector
-	distance float64
-	height   float64
+	image     string
+	pos       vector
+	distance  float64
+	height    float64
+	animation *animation
+}
+
+type animation struct {
+	numFrames    int
+	currentFrame int
+	numTime      float64
+	currentTime  float64
+}
+
+func (r *animation) Update(delta float64) {
+	//fmt.Printf("updating animation! current frame : %v", r.currentFrame)
+	r.currentTime += delta
+	if r.currentTime > r.numTime {
+		r.currentTime -= r.numTime
+		r.currentFrame += 1
+		if r.currentFrame == r.numFrames {
+			r.currentFrame = 0
+		}
+	}
 }
 
 type entity struct {
@@ -59,6 +79,9 @@ func (r *entity) Update(delta float64) {
 	r.pos.y = r.pos.y + (r.dir.y * delta * r.speed)
 	r.sprite.pos.x = r.pos.x
 	r.sprite.pos.y = r.pos.y
+	if r.sprite.animation != nil {
+		r.sprite.animation.Update(delta)
+	}
 }
 
 func (r *entity) undoLastMove(delta float64) {
@@ -72,17 +95,29 @@ type bullet struct {
 	entity *entity
 }
 
+func NewBullet(pos vector, dir vector) *bullet {
+	b := &bullet{
+		entity: NewEntity("bullet", pos),
+	}
+	b.entity.dir = dir
+	b.entity.speed = bulletSpeed
+	b.entity.width = (1.0 / TextureWidth) * 4.0
+	return b
+}
+
 func (r *bullet) Update(w *World, delta float64) {
 	r.entity.Update(delta)
 	t := w.getTileAtPoint(r.entity.pos)
 	if t.block {
 		r.entity.state = DeadEntityState
 		r.entity.undoLastMove(delta)
+		w.AddEffect("bullet-hit", r.entity.pos)
 	}
 	for _, e := range w.enemies {
 		if collides(r.entity, e.entity) {
 			r.entity.state = DeadEntityState
 			r.entity.undoLastMove(delta)
+			w.AddEffect("bullet-hit", r.entity.pos)
 			e.entity.health -= 1
 			// do more here, i.e. show effects
 		}
@@ -97,6 +132,34 @@ type enemy struct {
 func (r *enemy) Update(delta float64) {
 	r.entity.Update(delta)
 	// AI behaviour
+}
+
+type effect struct {
+	entity *entity
+	timer  float64
+}
+
+func NewEffect(image string, pos vector, timing float64, numFrames int) *effect {
+	fmt.Printf("adding new effet: %v image %v pos %v timing %v numFrames\n", image, pos, timing, numFrames)
+	e := &effect{
+		entity: NewEntity(image, pos),
+		timer:  float64(numFrames) * timing,
+	}
+	e.entity.sprite.animation = &animation{
+		numFrames: numFrames,
+		numTime:   timing,
+	}
+	return e
+}
+
+func (r *effect) Update(delta float64) {
+	r.entity.Update(delta)
+	if r.timer > 0 {
+		r.timer -= delta
+		if r.timer <= 0 {
+			r.entity.state = DeadEntityState
+		}
+	}
 }
 
 func collides(e1, e2 *entity) bool {

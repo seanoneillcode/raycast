@@ -29,6 +29,7 @@ func NewRenderer() *Renderer {
 			"door-floor": LoadImage("door-floor.png"),
 			"ammo":       LoadImage("ammo.png"),
 			"ammo-icon":  LoadImage("ammo-icon.png"),
+			"bullet-hit": LoadImage("bullet-hit.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -106,6 +107,9 @@ func (r *Renderer) drawSprites(w *World) {
 	for _, b := range w.pickups {
 		sprites = append(sprites, b.entity.sprite)
 	}
+	for _, b := range w.effects {
+		sprites = append(sprites, b.entity.sprite)
+	}
 
 	for _, s := range sprites {
 		s.distance = (w.player.pos.x-s.pos.x)*(w.player.pos.x-s.pos.x) + (w.player.pos.y-s.pos.y)*(w.player.pos.y-s.pos.y)
@@ -172,7 +176,11 @@ func (r *Renderer) drawSprites(w *World) {
 					texY := ((d * TextureHeight) / spriteHeight) / 256
 
 					img := r.textures[s.image]
-					c := img.At(texX, texY)
+					frameOffsetX := 0
+					if s.animation != nil {
+						frameOffsetX = s.animation.currentFrame * TextureWidth
+					}
+					c := img.At(texX+frameOffsetX, texY)
 					r.SetPixel(float64(stripe), float64(y), c)
 				}
 			}
