@@ -2,10 +2,10 @@ package raycast
 
 import (
 	"fmt"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -47,7 +47,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.renderer.Render(screen, g.world)
 	//ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f", ebiten.CurrentFPS()))
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("AMMO: %d", g.world.player.ammo), 0, ScreenHeight-20)
+	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", g.world.player.ammo), 20, 6)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

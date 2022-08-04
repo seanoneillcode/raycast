@@ -110,3 +110,34 @@ func collides(e1, e2 *entity) bool {
 	}
 	return withinX && withinY
 }
+
+type pickupType string
+
+const (
+	ammoPickupType pickupType = "ammo"
+)
+
+type pickup struct {
+	entity     *entity
+	pickupType pickupType
+	amount     int
+}
+
+func (r *pickup) Update(w *World, delta float64) {
+	r.entity.Update(delta)
+	if r.entity.state != DeadEntityState {
+		withinX := math.Abs(w.player.pos.x-r.entity.pos.x) < ((w.player.width + r.entity.width) / 2)
+		withinY := math.Abs(w.player.pos.y-r.entity.pos.y) < ((w.player.width + r.entity.width) / 2)
+		if withinX && withinY {
+			fmt.Printf("entity player collided with entity %v\n ", r.entity.sprite.image)
+			switch r.pickupType {
+			case ammoPickupType:
+				w.player.ammo += r.amount
+				if w.player.ammo > maxAmmo {
+					w.player.ammo = maxAmmo
+				}
+			}
+			r.entity.state = DeadEntityState
+		}
+	}
+}

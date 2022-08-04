@@ -37,6 +37,7 @@ type World struct {
 	tiles   [][]*tile
 	bullets []*bullet
 	enemies []*enemy
+	pickups []*pickup
 
 	player *player
 }
@@ -52,13 +53,25 @@ func NewWorld(width, height int) *World {
 		}),
 		enemies: []*enemy{
 			{
-				entity: NewEntity("eye", vector{x: 2, y: 2}),
+				entity: NewEntity("eye", vector{x: 1, y: 3}),
 			},
 			{
 				entity: NewEntity("eye", vector{x: 13, y: 7}),
 			},
 		},
 		bullets: []*bullet{},
+		pickups: []*pickup{
+			{
+				entity:     NewEntity("ammo", vector{x: 2, y: 2}),
+				pickupType: ammoPickupType,
+				amount:     10,
+			},
+			{
+				entity:     NewEntity("ammo", vector{x: 8, y: 6}),
+				pickupType: ammoPickupType,
+				amount:     10,
+			},
+		},
 	}
 	for x := 0; x < w.width; x++ {
 		w.tiles[x] = make([]*tile, width*height)
@@ -93,12 +106,33 @@ func (w *World) Update(delta float64) error {
 	if hasDead {
 		cleanDeadBullet(w)
 	}
+
+	hasDead = false
+	for _, b := range w.pickups {
+		b.Update(w, delta)
+		if b.entity.state == DeadEntityState {
+			hasDead = true
+		}
+	}
+	if hasDead {
+		cleanDeadPickup(w)
+	}
 	err := w.player.Update(w, delta)
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func cleanDeadPickup(w *World) {
+	temp := w.pickups[:0]
+	for _, b := range w.pickups {
+		if b.entity.state != DeadEntityState {
+			temp = append(temp, b)
+		}
+	}
+	w.pickups = temp
 }
 
 func cleanDeadBullet(w *World) {

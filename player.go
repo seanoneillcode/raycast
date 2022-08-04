@@ -8,6 +8,7 @@ import (
 )
 
 const checkDistance = 0.5
+const maxAmmo = 100
 
 type player struct {
 	pos           vector
@@ -18,6 +19,7 @@ type player struct {
 	ammo          int
 	fireRateTimer float64
 	fireRateMax   float64
+	width         float64
 }
 
 func NewPlayer(pos vector) *player {
@@ -37,6 +39,7 @@ func NewPlayer(pos vector) *player {
 		pos:         pos,
 		fireRateMax: 200.0, // millis
 		ammo:        100,
+		width:       0.5,
 	}
 }
 

@@ -27,6 +27,8 @@ func NewRenderer() *Renderer {
 			"bullet":     LoadImage("bullet.png"),
 			"door":       LoadImage("door.png"),
 			"door-floor": LoadImage("door-floor.png"),
+			"ammo":       LoadImage("ammo.png"),
+			"ammo-icon":  LoadImage("ammo-icon.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -47,6 +49,8 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 	}
 
 	r.drawSprites(w)
+
+	r.drawHud()
 
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
@@ -77,6 +81,18 @@ func (r *Renderer) drawSky(w *World) {
 	}
 }
 
+func (r *Renderer) drawHud() {
+	ammoIcon := r.textures["ammo-icon"]
+	width := ammoIcon.Bounds().Size().X
+	height := ammoIcon.Bounds().Size().Y
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			c := ammoIcon.At(x, y)
+			r.SetPixel(float64(x+10), float64(y+10), c)
+		}
+	}
+}
+
 func (r *Renderer) drawSprites(w *World) {
 
 	var sprites []*sprite
@@ -85,6 +101,9 @@ func (r *Renderer) drawSprites(w *World) {
 		sprites = append(sprites, e.entity.sprite)
 	}
 	for _, b := range w.bullets {
+		sprites = append(sprites, b.entity.sprite)
+	}
+	for _, b := range w.pickups {
 		sprites = append(sprites, b.entity.sprite)
 	}
 
