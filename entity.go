@@ -140,7 +140,6 @@ type effect struct {
 }
 
 func NewEffect(image string, pos vector, timing float64, numFrames int) *effect {
-	fmt.Printf("adding new effet: %v image %v pos %v timing %v numFrames\n", image, pos, timing, numFrames)
 	e := &effect{
 		entity: NewEntity(image, pos),
 		timer:  float64(numFrames) * timing,
@@ -159,6 +158,27 @@ func (r *effect) Update(delta float64) {
 		if r.timer <= 0 {
 			r.entity.state = DeadEntityState
 		}
+	}
+}
+
+type portal struct {
+	entity *entity
+}
+
+func NewPortal(pos vector) *portal {
+	return &portal{
+		entity: NewEntity("portal", pos),
+	}
+}
+
+func (r *portal) Update(w *World, delta float64) {
+	r.entity.Update(delta)
+	withinX := math.Abs(w.player.pos.x-r.entity.pos.x) < ((w.player.width + r.entity.width) / 2)
+	withinY := math.Abs(w.player.pos.y-r.entity.pos.y) < ((w.player.width + r.entity.width) / 2)
+	if withinX && withinY {
+		fmt.Printf("entity player collided with portal\n ")
+		fmt.Printf("level won!!")
+		panic("player won")
 	}
 }
 

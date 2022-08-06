@@ -30,6 +30,7 @@ func NewRenderer() *Renderer {
 			"ammo":       LoadImage("ammo.png"),
 			"ammo-icon":  LoadImage("ammo-icon.png"),
 			"bullet-hit": LoadImage("bullet-hit.png"),
+			"portal":     LoadImage("portal.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -108,6 +109,9 @@ func (r *Renderer) drawSprites(w *World) {
 		sprites = append(sprites, b.entity.sprite)
 	}
 	for _, b := range w.effects {
+		sprites = append(sprites, b.entity.sprite)
+	}
+	for _, b := range w.portals {
 		sprites = append(sprites, b.entity.sprite)
 	}
 

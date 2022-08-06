@@ -7,7 +7,7 @@ import (
 	"math"
 )
 
-const checkDistance = 0.5
+const checkDistance = 0.7
 const maxAmmo = 100
 
 type player struct {
