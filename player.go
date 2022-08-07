@@ -120,6 +120,9 @@ func (r *player) Update(w *World, delta float64) error {
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("normal escape termination")
 	}
+	if r.health < 0 {
+		return errors.New("player died")
+	}
 
 	return nil
 }
