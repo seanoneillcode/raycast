@@ -5,33 +5,6 @@ import (
 	"math"
 )
 
-type sprite struct {
-	image     string
-	pos       vector
-	distance  float64
-	height    float64
-	animation *animation
-}
-
-type animation struct {
-	numFrames    int
-	currentFrame int
-	numTime      float64
-	currentTime  float64
-}
-
-func (r *animation) Update(delta float64) {
-	//fmt.Printf("updating animation! current frame : %v", r.currentFrame)
-	r.currentTime += delta
-	if r.currentTime > r.numTime {
-		r.currentTime -= r.numTime
-		r.currentFrame += 1
-		if r.currentFrame == r.numFrames {
-			r.currentFrame = 0
-		}
-	}
-}
-
 type entity struct {
 	sprite *sprite
 	pos    vector
@@ -166,9 +139,15 @@ type portal struct {
 }
 
 func NewPortal(pos vector) *portal {
-	return &portal{
+	timing := 0.2 * 1000
+	p := &portal{
 		entity: NewEntity("portal", pos),
 	}
+	p.entity.sprite.animation = &animation{
+		numFrames: 4,
+		numTime:   timing,
+	}
+	return p
 }
 
 func (r *portal) Update(w *World, delta float64) {

@@ -29,8 +29,9 @@ type Game struct {
 
 func NewGame() *Game {
 	return &Game{
-		world:    NewWorld(MapSize, MapSize),
-		renderer: NewRenderer(),
+		world:            NewWorld(MapSize, MapSize),
+		renderer:         NewRenderer(),
+		lastUpdateCalled: time.Now(),
 	}
 }
 
