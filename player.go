@@ -20,6 +20,7 @@ type player struct {
 	fireRateTimer float64
 	fireRateMax   float64
 	width         float64
+	health        int
 }
 
 func NewPlayer(pos vector) *player {
@@ -38,8 +39,9 @@ func NewPlayer(pos vector) *player {
 		},
 		pos:         pos,
 		fireRateMax: 200.0, // millis
-		ammo:        100,
+		ammo:        10,
 		width:       0.5,
+		health:      4,
 	}
 }
 

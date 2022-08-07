@@ -20,17 +20,19 @@ func NewRenderer() *Renderer {
 		background: ebiten.NewImageFromImage(LoadImage("background.png")),
 		image:      ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
 		textures: map[string]image.Image{
-			"wall":       LoadImage("wall-2.png"),
-			"floor":      LoadImage("floor-1.png"),
-			"ceiling":    LoadImage("ceiling.png"),
-			"eye":        LoadImage("sprite.png"),
-			"bullet":     LoadImage("bullet.png"),
-			"door":       LoadImage("door.png"),
-			"door-floor": LoadImage("door-floor.png"),
-			"ammo":       LoadImage("ammo.png"),
-			"ammo-icon":  LoadImage("ammo-icon.png"),
-			"bullet-hit": LoadImage("bullet-hit.png"),
-			"portal":     LoadImage("portal.png"),
+			"wall":        LoadImage("wall-2.png"),
+			"floor":       LoadImage("floor-1.png"),
+			"ceiling":     LoadImage("ceiling.png"),
+			"eye":         LoadImage("sprite.png"),
+			"bullet":      LoadImage("bullet.png"),
+			"door":        LoadImage("door.png"),
+			"door-floor":  LoadImage("door-floor.png"),
+			"ammo":        LoadImage("ammo.png"),
+			"ammo-icon":   LoadImage("ammo-icon.png"),
+			"health":      LoadImage("health.png"),
+			"health-icon": LoadImage("health-icon.png"),
+			"bullet-hit":  LoadImage("bullet-hit.png"),
+			"portal":      LoadImage("portal.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -84,13 +86,32 @@ func (r *Renderer) drawSky(w *World) {
 }
 
 func (r *Renderer) drawHud() {
+
+	ammoPos := vector{
+		x: 18,
+		y: 8,
+	}
 	ammoIcon := r.textures["ammo-icon"]
 	width := ammoIcon.Bounds().Size().X
 	height := ammoIcon.Bounds().Size().Y
 	for x := 0; x < width; x++ {
 		for y := 0; y < height; y++ {
 			c := ammoIcon.At(x, y)
-			r.SetPixel(float64(x+10), float64(y+10), c)
+			r.SetPixel(float64(x)+ammoPos.x, float64(y)+ammoPos.y, c)
+		}
+	}
+
+	healthPos := vector{
+		x: 210,
+		y: 8,
+	}
+	healthIcon := r.textures["health-icon"]
+	width = ammoIcon.Bounds().Size().X
+	height = ammoIcon.Bounds().Size().Y
+	for x := 0; x < width; x++ {
+		for y := 0; y < height; y++ {
+			c := healthIcon.At(x, y)
+			r.SetPixel(float64(x)+healthPos.x, float64(y)+healthPos.y, c)
 		}
 	}
 }
