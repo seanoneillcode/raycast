@@ -74,16 +74,8 @@ func NewWorld(width, height int) *World {
 		bullets: []*bullet{},
 		effects: []*effect{},
 		pickups: []*pickup{
-			{
-				entity:     NewEntity("ammo", vector{x: 10.5, y: 5.5}),
-				pickupType: ammoPickupType,
-				amount:     10,
-			},
-			{
-				entity:     NewEntity("ammo", vector{x: 8.5, y: 7.5}),
-				pickupType: ammoPickupType,
-				amount:     10,
-			},
+			NewPickup(ammoPickupType, 20, vector{x: 10.5, y: 5.5}),
+			NewPickup(healthPickupType, 4, vector{x: 8.5, y: 7.5}),
 		},
 		portals: []*portal{
 			NewPortal(vector{x: 2.5, y: 6.5}),

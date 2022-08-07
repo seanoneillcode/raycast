@@ -8,7 +8,8 @@ import (
 )
 
 const checkDistance = 0.7
-const maxAmmo = 100
+const maxAmmo = 30
+const maxHealth = 10
 
 type player struct {
 	pos           vector
