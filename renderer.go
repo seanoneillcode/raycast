@@ -11,6 +11,7 @@ import (
 type Renderer struct {
 	background *ebiten.Image
 	image      *ebiten.Image
+	weapon     *ebiten.Image
 	textures   map[string]image.Image
 	zbuffer    []float64
 }
@@ -34,6 +35,7 @@ func NewRenderer() *Renderer {
 			"bullet-hit":  LoadImage("bullet-hit.png"),
 			"portal":      LoadImage("portal.png"),
 		},
+		weapon:  ebiten.NewImageFromImage(LoadImage("weapon-staff.png")),
 		zbuffer: make([]float64, ScreenWidth),
 	}
 }
@@ -55,6 +57,7 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 	r.drawSprites(w)
 
 	r.drawHud()
+	r.drawWeapon(r.image)
 
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
@@ -83,6 +86,17 @@ func (r *Renderer) drawSky(w *World) {
 			r.SetPixel(float64(x), float64(y), c)
 		}
 	}
+}
+
+func (r *Renderer) drawWeapon(screen *ebiten.Image) {
+	pos := vector{
+		x: 192 - 64,
+		y: 192 - 64,
+	}
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(4, 4)
+	op.GeoM.Translate(pos.x, pos.y)
+	screen.DrawImage(r.weapon, op)
 }
 
 func (r *Renderer) drawHud() {
