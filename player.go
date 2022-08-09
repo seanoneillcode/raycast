@@ -12,16 +12,18 @@ const maxAmmo = 30
 const maxHealth = 10
 
 type player struct {
-	pos           vector
-	dir           vector
-	strafeDir     vector
-	plane         vector
-	oldMousePos   int
-	ammo          int
-	fireRateTimer float64
-	fireRateMax   float64
-	width         float64
-	health        int
+	pos             vector
+	dir             vector
+	strafeDir       vector
+	plane           vector
+	oldMousePos     int
+	ammo            int
+	fireRateTimer   float64
+	fireRateMax     float64
+	width           float64
+	health          int
+	weaponAnimation *animation
+	useWeaponTimer  float64
 }
 
 func NewPlayer(pos vector) *player {
@@ -43,10 +45,18 @@ func NewPlayer(pos vector) *player {
 		ammo:        10,
 		width:       0.5,
 		health:      4,
+		weaponAnimation: &animation{
+			numFrames: 4,
+			numTime:   0.1 * 1000,
+			autoplay:  false,
+		},
 	}
 }
 
 func (r *player) Update(w *World, delta float64) error {
+
+	r.weaponAnimation.Update(delta)
+
 	// handle input
 	if ebiten.IsKeyPressed(ebiten.KeyW) {
 		r.Move(w, delta, vector{
@@ -95,8 +105,9 @@ func (r *player) Update(w *World, delta float64) error {
 		if r.ammo > 0 && r.fireRateTimer < 0 {
 			r.ammo -= 1
 			r.fireRateTimer = r.fireRateMax
-			posInFrontOfPlayer := addVector(r.pos, r.dir)
+			posInFrontOfPlayer := addVector(r.pos, scaleVector(r.dir, 0.3))
 			w.ShootBullet(posInFrontOfPlayer, r.dir)
+			r.weaponAnimation.Play()
 		}
 	}
 	r.fireRateTimer -= delta

@@ -120,6 +120,7 @@ func NewEffect(image string, pos vector, timing float64, numFrames int) *effect 
 	e.entity.sprite.animation = &animation{
 		numFrames: numFrames,
 		numTime:   timing,
+		autoplay:  true,
 	}
 	return e
 }
@@ -146,6 +147,7 @@ func NewPortal(pos vector) *portal {
 	p.entity.sprite.animation = &animation{
 		numFrames: 4,
 		numTime:   timing,
+		autoplay:  true,
 	}
 	return p
 }

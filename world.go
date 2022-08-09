@@ -16,6 +16,13 @@ func addVector(v1, v2 vector) vector {
 	}
 }
 
+func scaleVector(v1 vector, amount float64) vector {
+	return vector{
+		x: v1.x * amount,
+		y: v1.y * amount,
+	}
+}
+
 type mapPos struct {
 	x int
 	y int
