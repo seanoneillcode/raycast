@@ -44,7 +44,7 @@ func NewPlayer(pos vector) *player {
 		fireRateMax: 200.0, // millis
 		ammo:        10,
 		width:       0.5,
-		health:      4,
+		health:      3,
 		weaponAnimation: &animation{
 			numFrames: 4,
 			numTime:   0.1 * 1000,
@@ -158,4 +158,9 @@ func (r *player) Move(w *World, delta float64, dir vector) {
 	if tiley == nil || !tiley.block {
 		r.pos.y += movey
 	}
+}
+
+func (r *player) TakeDamage(amount int) {
+	r.health -= 1
+	// flash red or something
 }

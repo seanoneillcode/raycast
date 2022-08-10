@@ -70,7 +70,7 @@ func NewWorld(width, height int) *World {
 		effects: []*effect{},
 		pickups: []*pickup{
 			NewPickup(ammoPickupType, 20, vector{x: 10.5, y: 5.5}),
-			NewPickup(healthPickupType, 4, vector{x: 8.5, y: 7.5}),
+			NewPickup(healthPickupType, 3, vector{x: 8.5, y: 7.5}),
 		},
 		portals: []*portal{
 			NewPortal(vector{x: 2.5, y: 6.5}),
@@ -90,7 +90,7 @@ func (w *World) Update(delta float64) error {
 
 	hasDead := false
 	for _, e := range w.enemies {
-		e.Update(delta)
+		e.Update(w, delta)
 		if e.entity.state == DeadEntityState {
 			hasDead = true
 		}
