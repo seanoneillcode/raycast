@@ -10,7 +10,7 @@ func NewEffect(image string, pos vector, timing float64, numFrames int) *effect 
 		entity: NewEntity(image, pos),
 		timer:  float64(numFrames) * timing,
 	}
-	e.entity.sprite.animation = &animation{
+	e.entity.sprites[0].animation = &animation{
 		numFrames: numFrames,
 		numTime:   timing,
 		autoplay:  true,

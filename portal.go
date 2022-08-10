@@ -14,7 +14,7 @@ func NewPortal(pos vector) *portal {
 	p := &portal{
 		entity: NewEntity("portal", pos),
 	}
-	p.entity.sprite.animation = &animation{
+	p.entity.sprites[0].animation = &animation{
 		numFrames: 4,
 		numTime:   timing,
 		autoplay:  true,

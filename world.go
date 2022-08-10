@@ -59,24 +59,12 @@ func NewWorld(width, height int) *World {
 			y: 3,
 		}),
 		enemies: []*enemy{
-			{
-				entity: NewEntity("eye", vector{x: 8, y: 4}),
-			},
-			{
-				entity: NewEntity("eye", vector{x: 13.5, y: 6}),
-			},
-			{
-				entity: NewEntity("eye", vector{x: 11, y: 11}),
-			},
-			{
-				entity: NewEntity("eye", vector{x: 6.5, y: 13}),
-			},
-			{
-				entity: NewEntity("eye", vector{x: 10.5, y: 7.5}),
-			},
-			{
-				entity: NewEntity("eye", vector{x: 7.5, y: 9.5}),
-			},
+			NewEnemy(vector{x: 8, y: 4}),
+			NewEnemy(vector{x: 13.5, y: 6}),
+			NewEnemy(vector{x: 11, y: 11}),
+			NewEnemy(vector{x: 6.5, y: 13}),
+			NewEnemy(vector{x: 10.5, y: 7.5}),
+			NewEnemy(vector{x: 7.5, y: 9.5}),
 		},
 		bullets: []*bullet{},
 		effects: []*effect{},

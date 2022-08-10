@@ -21,20 +21,22 @@ func NewRenderer() *Renderer {
 		background: ebiten.NewImageFromImage(LoadImage("background.png")),
 		image:      ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
 		textures: map[string]image.Image{
-			"wall":         LoadImage("wall-2.png"),
-			"floor":        LoadImage("floor-1.png"),
-			"ceiling":      LoadImage("ceiling.png"),
-			"eye":          LoadImage("sprite.png"),
-			"bullet":       LoadImage("bullet.png"),
-			"door":         LoadImage("door.png"),
-			"door-floor":   LoadImage("door-floor.png"),
-			"ammo":         LoadImage("ammo.png"),
-			"ammo-icon":    LoadImage("ammo-icon.png"),
-			"health":       LoadImage("health.png"),
-			"health-icon":  LoadImage("health-icon.png"),
-			"bullet-hit":   LoadImage("bullet-hit.png"),
-			"portal":       LoadImage("portal.png"),
-			"weapon-staff": LoadImage("weapon-staff.png"),
+			"wall":            LoadImage("wall-2.png"),
+			"floor":           LoadImage("floor-1.png"),
+			"ceiling":         LoadImage("ceiling.png"),
+			"eye":             LoadImage("sprite.png"),
+			"bullet":          LoadImage("bullet.png"),
+			"door":            LoadImage("door.png"),
+			"door-floor":      LoadImage("door-floor.png"),
+			"ammo":            LoadImage("ammo.png"),
+			"ammo-icon":       LoadImage("ammo-icon.png"),
+			"health":          LoadImage("health.png"),
+			"health-icon":     LoadImage("health-icon.png"),
+			"bullet-hit":      LoadImage("bullet-hit.png"),
+			"portal":          LoadImage("portal.png"),
+			"weapon-staff":    LoadImage("weapon-staff.png"),
+			"enemy-ball-move": LoadImage("enemy-ball-move.png"),
+			"enemy-ball-hurt": LoadImage("enemy-ball-hurt.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -147,19 +149,19 @@ func (r *Renderer) drawSprites(w *World) {
 	var sprites []*sprite
 
 	for _, e := range w.enemies {
-		sprites = append(sprites, e.entity.sprite)
+		sprites = append(sprites, e.entity.CurrentSprite())
 	}
 	for _, b := range w.bullets {
-		sprites = append(sprites, b.entity.sprite)
+		sprites = append(sprites, b.entity.CurrentSprite())
 	}
 	for _, b := range w.pickups {
-		sprites = append(sprites, b.entity.sprite)
+		sprites = append(sprites, b.entity.CurrentSprite())
 	}
 	for _, b := range w.effects {
-		sprites = append(sprites, b.entity.sprite)
+		sprites = append(sprites, b.entity.CurrentSprite())
 	}
 	for _, b := range w.portals {
-		sprites = append(sprites, b.entity.sprite)
+		sprites = append(sprites, b.entity.CurrentSprite())
 	}
 
 	for _, s := range sprites {
