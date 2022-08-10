@@ -22,8 +22,10 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 	switch t {
 	case ammoPickupType:
 		img = "ammo"
+		break
 	case healthPickupType:
 		img = "health"
+		break
 	}
 	return &pickup{
 		entity:     NewEntity(img, pos),
@@ -44,11 +46,13 @@ func (r *pickup) Update(w *World, delta float64) {
 				if w.player.ammo > maxAmmo {
 					w.player.ammo = maxAmmo
 				}
+				break
 			case healthPickupType:
 				w.player.health += r.amount
 				if w.player.health > maxHealth {
 					w.player.health = maxHealth
 				}
+				break
 			}
 			r.entity.state = DeadEntityState
 		}

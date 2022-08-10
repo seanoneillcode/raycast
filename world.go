@@ -1,5 +1,7 @@
 package raycast
 
+import "math"
+
 const moveAmount = 0.002
 const rotateAmount = 0.0005
 const bulletSpeed = 0.01
@@ -20,6 +22,14 @@ func scaleVector(v1 vector, amount float64) vector {
 	return vector{
 		x: v1.x * amount,
 		y: v1.y * amount,
+	}
+}
+
+func normalizeVector(v1 vector) vector {
+	magnitude := math.Sqrt((v1.x * v1.x) + (v1.y * v1.y))
+	return vector{
+		x: v1.x / magnitude,
+		y: v1.y / magnitude,
 	}
 }
 

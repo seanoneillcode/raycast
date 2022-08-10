@@ -20,6 +20,7 @@ type EntityState string
 const (
 	DeadEntityState    EntityState = "dead"
 	NothingEntityState EntityState = "nothing"
+	HurtEntityState    EntityState = "hurt"
 )
 
 const entitySpeed = 0.002
@@ -28,8 +29,9 @@ func NewEntity(img string, pos vector) *entity {
 	return &entity{
 		sprites: []*sprite{
 			{
-				image: img,
-				pos:   vector{},
+				image:    img,
+				pos:      vector{},
+				distance: -1,
 			},
 		},
 		pos:    pos,
@@ -50,8 +52,10 @@ func (r *entity) Update(delta float64) {
 		// play dying animation
 		// spawn pickup
 	}
-	r.pos.x = r.pos.x + (r.dir.x * delta * r.speed)
-	r.pos.y = r.pos.y + (r.dir.y * delta * r.speed)
+	if r.state == NothingEntityState {
+		r.pos.x = r.pos.x + (r.dir.x * delta * r.speed)
+		r.pos.y = r.pos.y + (r.dir.y * delta * r.speed)
+	}
 	r.sprites[r.currentSprite].pos.x = r.pos.x
 	r.sprites[r.currentSprite].pos.y = r.pos.y
 	if r.sprites[r.currentSprite].animation != nil {
@@ -82,5 +86,11 @@ func collides(e1, e2 *entity) bool {
 	}
 	withinX := math.Abs(e1.pos.x-e2.pos.x) < ((e1.width + e2.width) / 2)
 	withinY := math.Abs(e1.pos.y-e2.pos.y) < ((e1.width + e2.width) / 2)
+	return withinX && withinY
+}
+
+func within(p1 vector, p2 vector, distance float64) bool {
+	withinX := math.Abs(p1.x-p2.x) < distance
+	withinY := math.Abs(p1.y-p2.y) < distance
 	return withinX && withinY
 }

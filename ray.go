@@ -112,3 +112,79 @@ func calculateRay(w *World, cameraX float64) ray {
 		texture:  texture,
 	}
 }
+
+func canSeePos(w *World, startPos vector, targetPos vector) bool {
+	rayStart := startPos
+	targetMapPos := mapPos{
+		x: int(targetPos.x),
+		y: int(targetPos.y),
+	}
+
+	rayDir := normalizeVector(vector{
+		x: targetPos.x - startPos.x,
+		y: targetPos.y - startPos.y,
+	})
+
+	rayUnitStepSize := vector{
+		x: math.Abs(1 / rayDir.x),
+		y: math.Abs(1 / rayDir.y),
+	}
+
+	if rayUnitStepSize.x == 0 {
+		rayUnitStepSize.x = 111111111
+	}
+	if rayUnitStepSize.y == 0 {
+		rayUnitStepSize.y = 111111111
+	}
+
+	rayMapPos := mapPos{
+		x: int(rayStart.x),
+		y: int(rayStart.y),
+	}
+
+	rayLength := vector{}
+	step := mapPos{}
+
+	if rayDir.x < 0 {
+		step.x = -1
+		rayLength.x = (rayStart.x - float64(rayMapPos.x)) * rayUnitStepSize.x
+	} else {
+		step.x = 1
+		rayLength.x = (float64(rayMapPos.x+1) - rayStart.x) * rayUnitStepSize.x
+	}
+	if rayDir.y < 0 {
+		step.y = -1
+		rayLength.y = (rayStart.y - float64(rayMapPos.y)) * rayUnitStepSize.y
+	} else {
+		step.y = 1
+		rayLength.y = (float64(rayMapPos.y+1) - rayStart.y) * rayUnitStepSize.y
+	}
+
+	maxDistance := 256.0
+	distance := 0.0
+
+	for distance < maxDistance {
+
+		if rayLength.x < rayLength.y {
+			rayMapPos.x += step.x
+			distance += rayLength.x
+			rayLength.x += rayUnitStepSize.x
+		} else {
+			rayMapPos.y += step.y
+			distance += rayLength.y
+			rayLength.y += rayUnitStepSize.y
+		}
+
+		t := w.getTile(rayMapPos.x, rayMapPos.y)
+		if t != nil {
+			if t.block {
+				return false
+			}
+		}
+		if rayMapPos.x == targetMapPos.x && rayMapPos.y == targetMapPos.y {
+			return true
+		}
+	}
+
+	return false
+}
