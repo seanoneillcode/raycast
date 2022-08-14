@@ -1,7 +1,9 @@
 package raycast
 
 import (
+	"fmt"
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/font"
 	"image"
 	"image/color"
 	"math"
@@ -14,6 +16,7 @@ type Renderer struct {
 	weaponAnimation *animation
 	textures        map[string]image.Image
 	zbuffer         []float64
+	commonFont      font.Face
 }
 
 func NewRenderer() *Renderer {
@@ -59,7 +62,7 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 
 	r.drawSprites(w)
 
-	r.drawHud()
+	r.drawHud(w)
 	r.drawWeapon(w)
 
 	// final render to screen
@@ -97,9 +100,32 @@ func (r *Renderer) drawWeapon(w *World) {
 		y: 192 - 64,
 	}
 	img := r.textures["weapon-staff"]
-	frameOffsetX := w.player.weaponAnimation.currentFrame * TextureWidth
-	scale := 4
+	r.drawScaledImage(pos, img, w.player.weaponAnimation.currentFrame, TextureWidth*2, 2)
+}
 
+func (r *Renderer) drawHud(w *World) {
+	ammoPos := vector{
+		x: 24,
+		y: 8,
+	}
+	ammoIcon := r.textures["ammo-icon"]
+	r.drawScaledImage(ammoPos, ammoIcon, 0, TextureWidth, 1)
+
+	healthPos := vector{
+		x: 256 - 32 - 8,
+		y: 8,
+	}
+	healthIcon := r.textures["health-icon"]
+	r.drawScaledImage(healthPos, healthIcon, 0, TextureWidth, 1)
+
+	drawText(r.image, fmt.Sprintf("%d", w.player.ammo), int(ammoPos.x+8), 7)
+	drawText(r.image, fmt.Sprintf("%d", w.player.health), int(healthPos.x+8), 7)
+
+	drawText(r.image, "find the portal to escape the maze!\nlots of love,\nbad wizard.", 32, 32)
+}
+
+func (r *Renderer) drawScaledImage(pos vector, img image.Image, frame int, textureWidth int, scale int) {
+	frameOffsetX := frame * textureWidth
 	width := img.Bounds().Size().X
 	height := img.Bounds().Size().Y
 	for x := 0; x < width; x++ {
@@ -110,37 +136,6 @@ func (r *Renderer) drawWeapon(w *World) {
 					r.SetPixel(float64(q)+pos.x, float64(z)+pos.y, c)
 				}
 			}
-		}
-	}
-}
-
-func (r *Renderer) drawHud() {
-
-	ammoPos := vector{
-		x: 18,
-		y: 8,
-	}
-	ammoIcon := r.textures["ammo-icon"]
-	width := ammoIcon.Bounds().Size().X
-	height := ammoIcon.Bounds().Size().Y
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			c := ammoIcon.At(x, y)
-			r.SetPixel(float64(x)+ammoPos.x, float64(y)+ammoPos.y, c)
-		}
-	}
-
-	healthPos := vector{
-		x: 210,
-		y: 8,
-	}
-	healthIcon := r.textures["health-icon"]
-	width = ammoIcon.Bounds().Size().X
-	height = ammoIcon.Bounds().Size().Y
-	for x := 0; x < width; x++ {
-		for y := 0; y < height; y++ {
-			c := healthIcon.At(x, y)
-			r.SetPixel(float64(x)+healthPos.x, float64(y)+healthPos.y, c)
 		}
 	}
 }

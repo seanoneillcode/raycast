@@ -1,8 +1,6 @@
 package raycast
 
 import (
-	"fmt"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -48,8 +46,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.renderer.Render(screen, g.world)
 	//ebitenutil.DebugPrint(screen, fmt.Sprintf("FPS: %0.2f", ebiten.CurrentFPS()))
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", g.world.player.ammo), 32, 8)
-	ebitenutil.DebugPrintAt(screen, fmt.Sprintf("%d", g.world.player.health), 222, 8)
+
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
