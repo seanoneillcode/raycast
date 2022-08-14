@@ -276,15 +276,41 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		texPos += step
 
 		c := img.At(texX, texY)
+		rgba := color.RGBAModel.Convert(c).(color.RGBA)
+		rgba = fakeLight(rgba, ray.distance)
 		if ray.side == 0 {
-			rgba := color.RGBAModel.Convert(c).(color.RGBA)
 			rgba.R = rgba.R / 2
 			rgba.G = rgba.G / 2
 			rgba.B = rgba.B / 2
-			c = rgba
 		}
+		c = rgba
 		r.SetPixel(float64(x), float64(y), c)
 	}
+}
+
+var fakeLightEnabled = true
+
+func fakeLight(c color.RGBA, distance float64) color.RGBA {
+	if !fakeLightEnabled {
+		return c
+	}
+
+	const maxLightDistance = 10.0
+	value := maxLightDistance - distance
+	if value < 0 {
+		value = 0
+	}
+	percentVal := value / maxLightDistance
+
+	newR := ((float64(c.R) / 255.0) * percentVal) * (255)
+	newG := ((float64(c.G) / 255.0) * percentVal) * (255)
+	newB := ((float64(c.B) / 255.0) * percentVal) * (255)
+
+	c.R = uint8(newR)
+	c.G = uint8(newG)
+	c.B = uint8(newB)
+
+	return c
 }
 
 func (r *Renderer) SetPixel(x float64, y float64, c color.Color) {
@@ -361,12 +387,17 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 			if floorTex != "" {
 				img := r.textures[floorTex]
 				c := img.At(tx, ty)
-				r.SetPixel(float64(x), float64(y), c)
+
+				rgba := color.RGBAModel.Convert(c).(color.RGBA)
+				rgba = fakeLight(rgba, rowDistance)
+				r.SetPixel(float64(x), float64(y), rgba)
 			}
 			if ceilingTex != "" {
 				img := r.textures[ceilingTex]
 				c := img.At(tx, ty)
-				r.SetPixel(float64(x), float64(ScreenHeight-y-1), c)
+				rgba := color.RGBAModel.Convert(c).(color.RGBA)
+				rgba = fakeLight(rgba, rowDistance)
+				r.SetPixel(float64(x), float64(ScreenHeight-y-1), rgba)
 			}
 
 		}

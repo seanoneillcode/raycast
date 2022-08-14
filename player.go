@@ -104,6 +104,9 @@ func (r *player) Update(w *World, delta float64) error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
 		r.showMiniMap = !r.showMiniMap
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyL) {
+		fakeLightEnabled = !fakeLightEnabled
+	}
 	// change to pressed with fire rate
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
 		// check for ammo
