@@ -64,6 +64,7 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 
 	r.drawHud(w)
 	r.drawWeapon(w)
+	r.drawMiniMap(w)
 
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
@@ -371,4 +372,59 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 		}
 
 	}
+}
+
+func (r *Renderer) drawMiniMap(w *World) {
+
+	if !w.player.showMiniMap {
+		return
+	}
+
+	const miniWidth = 32
+	const halfMiniWidth = miniWidth / 2
+
+	mapPlayerPos := mapPos{
+		x: int(w.player.pos.x),
+		y: int(w.player.pos.y),
+	}
+
+	screenPos := vector{
+		x: 8,
+		y: 216,
+	}
+
+	for tx := 0; tx < miniWidth; tx += 1 {
+		for ty := 0; ty < miniWidth; ty += 1 {
+			x := mapPlayerPos.x + tx - halfMiniWidth
+			y := mapPlayerPos.y + ty - halfMiniWidth
+
+			t := w.getTile(x, y)
+			if t == nil {
+				continue
+			}
+			if !t.seen {
+				continue
+			}
+
+			c := emptyColor
+			if t.block {
+				c = blockColor
+			}
+			if t.door {
+				c = doorColor
+			}
+
+			r.drawChunkyPixel(screenPos.x+float64(x*2), screenPos.y+float64(y*2), c)
+			if tx == halfMiniWidth && ty == halfMiniWidth {
+				r.drawChunkyPixel(screenPos.x+float64(x*2), screenPos.y+float64(y*2), playerColor)
+			}
+		}
+	}
+}
+
+func (r *Renderer) drawChunkyPixel(x float64, y float64, c color.RGBA) {
+	r.SetPixel(x, y, c)
+	r.SetPixel(x+1, y, c)
+	r.SetPixel(x, y+1, c)
+	r.SetPixel(x+1, y+1, c)
 }

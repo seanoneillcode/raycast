@@ -84,6 +84,7 @@ func calculateRay(w *World, cameraX float64) ray {
 			if t.block {
 				tileFound = true
 			}
+			t.seen = true
 		}
 	}
 

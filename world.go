@@ -44,6 +44,7 @@ type tile struct {
 	floorTex   string
 	wallTex    string
 	ceilingTex string
+	seen       bool
 }
 
 type World struct {

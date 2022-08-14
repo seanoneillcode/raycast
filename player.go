@@ -24,6 +24,7 @@ type player struct {
 	health          int
 	weaponAnimation *animation
 	useWeaponTimer  float64
+	showMiniMap     bool
 }
 
 func NewPlayer(pos vector) *player {
@@ -50,6 +51,7 @@ func NewPlayer(pos vector) *player {
 			numTime:   0.1 * 1000,
 			autoplay:  false,
 		},
+		showMiniMap: true,
 	}
 }
 
@@ -98,6 +100,9 @@ func (r *player) Update(w *World, delta float64) error {
 				}
 			}
 		}
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
+		r.showMiniMap = !r.showMiniMap
 	}
 	// change to pressed with fire rate
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {
