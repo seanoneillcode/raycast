@@ -118,10 +118,10 @@ func (r *Renderer) drawHud(w *World) {
 	healthIcon := r.textures["health-icon"]
 	r.drawScaledImage(healthPos, healthIcon, 0, TextureWidth, 1)
 
-	drawText(r.image, fmt.Sprintf("%d", w.player.ammo), int(ammoPos.x+8), 7)
-	drawText(r.image, fmt.Sprintf("%d", w.player.health), int(healthPos.x+8), 7)
+	RenderText(r.image, fmt.Sprintf("%d", w.player.ammo), int(ammoPos.x+8), 7)
+	RenderText(r.image, fmt.Sprintf("%d", w.player.health), int(healthPos.x+8), 7)
 
-	drawText(r.image, "find the portal to escape the maze!\nlots of love,\nbad wizard.", 32, 32)
+	RenderText(r.image, "find the portal to escape the maze!\nlots of love,\nbad wizard.", 32, 32)
 }
 
 func (r *Renderer) drawScaledImage(pos vector, img image.Image, frame int, textureWidth int, scale int) {

@@ -10,8 +10,16 @@ var (
 	textCharacterImages = map[rune]*ebiten.Image{}
 )
 
-func drawText(rt *ebiten.Image, str string, ox, oy int) {
+func RenderText(image *ebiten.Image, str string, x int, y int) {
+	renderText(image, str, x+1, y+1, true)
+	renderText(image, str, x, y, false)
+}
+
+func renderText(img *ebiten.Image, str string, ox, oy int, shadow bool) {
 	op := &ebiten.DrawImageOptions{}
+	if shadow {
+		op.ColorM.ChangeHSV(1, 1, 0)
+	}
 	x := 0
 	y := 0
 	const (
@@ -60,9 +68,8 @@ func drawText(rt *ebiten.Image, str string, ox, oy int) {
 			op.GeoM.Reset()
 			op.GeoM.Translate(float64(ox), float64(oy))
 			op.GeoM.Translate(float64(x), float64(y))
-			rt.DrawImage(s, op)
+			img.DrawImage(s, op)
 			x += cw - 4
 		}
 	}
-
 }
