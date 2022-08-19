@@ -19,6 +19,9 @@ type Renderer struct {
 	commonFont      font.Face
 }
 
+var fakeLightEnabled = false
+var screenFlashEnabled = true
+
 func NewRenderer() *Renderer {
 	return &Renderer{
 		background: ebiten.NewImageFromImage(LoadImage("background.png")),
@@ -31,6 +34,7 @@ func NewRenderer() *Renderer {
 			"bullet":            LoadImage("bullet.png"),
 			"door":              LoadImage("door.png"),
 			"door-floor":        LoadImage("door-floor.png"),
+			"soul":              LoadImage("soul.png"),
 			"ammo":              LoadImage("ammo.png"),
 			"ammo-icon":         LoadImage("ammo-icon.png"),
 			"health":            LoadImage("health.png"),
@@ -70,9 +74,9 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(GlobalScale, GlobalScale)
-	if w.player.screenFlashTimer > 0 {
+	if screenFlashEnabled && w.player.screenFlashTimer > 0 {
 		screen.Fill(w.player.screenFlashColor)
-		scale := 1 - (w.player.screenFlashTimer / screenFlashTime)
+		scale := 1 - ((w.player.screenFlashTimer / screenFlashTime) / 1)
 		op.ColorM.Scale(1, 1, 1, scale)
 	}
 	screen.DrawImage(r.image, op)
@@ -293,8 +297,6 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		r.SetPixel(float64(x), float64(y), c)
 	}
 }
-
-var fakeLightEnabled = false
 
 func fakeLight(c color.RGBA, distance float64) color.RGBA {
 	if !fakeLightEnabled {

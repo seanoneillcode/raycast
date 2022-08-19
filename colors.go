@@ -48,6 +48,13 @@ var healthPickupScreenFlashColor = color.RGBA{
 	A: 1,
 }
 
+var soulPickupScreenFlashColor = color.RGBA{
+	R: 0,
+	G: 255,
+	B: 183,
+	A: 1,
+}
+
 var unseenColor = color.RGBA{
 	R: 60,
 	G: 60,

@@ -24,6 +24,7 @@ type player struct {
 	fireRateMax      float64
 	width            float64
 	health           int
+	souls            int
 	weaponAnimation  *animation
 	useWeaponTimer   float64
 	showMiniMap      bool
@@ -110,6 +111,9 @@ func (r *player) Update(w *World, delta float64) error {
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyL) {
 		fakeLightEnabled = !fakeLightEnabled
+	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyK) {
+		screenFlashEnabled = !screenFlashEnabled
 	}
 	// change to pressed with fire rate
 	if ebiten.IsMouseButtonPressed(ebiten.MouseButtonLeft) {

@@ -13,6 +13,7 @@ type entity struct {
 	health        int
 	state         EntityState
 	currentSprite int
+	dropItem      string
 }
 
 type EntityState string

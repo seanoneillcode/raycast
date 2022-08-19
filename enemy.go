@@ -20,6 +20,7 @@ func NewEnemy(pos vector) *enemy {
 		attackTime: 0.6 * 1000,
 		state:      "move",
 	}
+	e.entity.dropItem = "soul"
 	e.entity.sprites = []*sprite{
 		{
 			image: "enemy-ball-move",
@@ -68,6 +69,9 @@ func (r *enemy) Update(w *World, delta float64) {
 		r.state = "dying"
 		r.currentHurtTime = r.dyingTime
 		r.entity.SetCurrentSprite(3)
+		if r.entity.dropItem != "" {
+			w.CreatePickup(r.entity.dropItem, r.entity.pos)
+		}
 	}
 	switch r.state {
 	case "hurt":

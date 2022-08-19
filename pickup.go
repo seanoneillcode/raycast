@@ -9,6 +9,7 @@ type pickupType string
 const (
 	ammoPickupType   pickupType = "ammo"
 	healthPickupType pickupType = "health"
+	soulPickupType   pickupType = "soul"
 )
 
 type pickup struct {
@@ -26,12 +27,23 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 	case healthPickupType:
 		img = "health"
 		break
+	case soulPickupType:
+		img = "soul"
+		break
 	}
-	return &pickup{
+	p := &pickup{
 		entity:     NewEntity(img, pos),
 		pickupType: t,
 		amount:     amount,
 	}
+	if t == soulPickupType {
+		p.entity.CurrentSprite().animation = &animation{
+			numFrames: 4,
+			numTime:   0.2 * 1000,
+			autoplay:  true,
+		}
+	}
+	return p
 }
 
 func (r *pickup) Update(w *World, delta float64) {
@@ -56,6 +68,11 @@ func (r *pickup) Update(w *World, delta float64) {
 				}
 				w.player.screenFlashTimer = screenFlashTime
 				w.player.screenFlashColor = healthPickupScreenFlashColor
+				break
+			case soulPickupType:
+				w.player.souls += r.amount
+				w.player.screenFlashTimer = screenFlashTime
+				w.player.screenFlashColor = soulPickupScreenFlashColor
 				break
 			}
 			r.entity.state = DeadEntityState

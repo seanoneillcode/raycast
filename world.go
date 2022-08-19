@@ -224,6 +224,16 @@ func (w *World) AddEffect(image string, pos vector) {
 	w.effects = append(w.effects, NewEffect(image, pos, timing, numFrames))
 }
 
+func (w *World) CreatePickup(name string, pos vector) {
+
+	switch name {
+	case "soul":
+		w.pickups = append(w.pickups, NewPickup(soulPickupType, 1, pos))
+		break
+	}
+
+}
+
 func initWorld(w *World) {
 
 	nums := [][]uint8{
