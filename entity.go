@@ -20,7 +20,7 @@ type EntityState string
 const (
 	DeadEntityState    EntityState = "dead"
 	NothingEntityState EntityState = "nothing"
-	HurtEntityState    EntityState = "hurt"
+	StunnedEntityState EntityState = "stunned"
 )
 
 const entitySpeed = 0.002
@@ -37,7 +37,7 @@ func NewEntity(img string, pos vector) *entity {
 		pos:    pos,
 		dir:    vector{},
 		speed:  entitySpeed,
-		health: 2,
+		health: 1,
 		state:  NothingEntityState,
 		width:  (1.0 / TextureWidth) * 20.0,
 	}
@@ -46,11 +46,6 @@ func NewEntity(img string, pos vector) *entity {
 func (r *entity) Update(delta float64) {
 	if r.state == DeadEntityState {
 		return
-	}
-	if r.health < 0 {
-		r.state = DeadEntityState
-		// play dying animation
-		// spawn pickup
 	}
 	if r.state == NothingEntityState {
 		r.pos.x = r.pos.x + (r.dir.x * delta * r.speed)

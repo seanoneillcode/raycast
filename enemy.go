@@ -3,6 +3,7 @@ package raycast
 type enemy struct {
 	entity            *entity
 	hurtTime          float64
+	dyingTime         float64
 	currentHurtTime   float64
 	attackTime        float64
 	currentAttackTime float64
@@ -15,6 +16,7 @@ func NewEnemy(pos vector) *enemy {
 	e := &enemy{
 		entity:     NewEntity("enemy-ball-move", pos),
 		hurtTime:   0.6 * 1000,
+		dyingTime:  0.4 * 1000,
 		attackTime: 0.6 * 1000,
 		state:      "move",
 	}
@@ -47,15 +49,29 @@ func NewEnemy(pos vector) *enemy {
 				autoplay:  true,
 			},
 		},
+		{
+			image: "enemy-ball-die",
+			pos:   pos,
+			animation: &animation{
+				numFrames: 4,
+				numTime:   0.1 * 1000,
+				autoplay:  true,
+			},
+		},
 	}
 	return e
 }
 
 func (r *enemy) Update(w *World, delta float64) {
 	r.entity.Update(delta)
+	if r.entity.health < 0 && r.state != "dying" {
+		r.state = "dying"
+		r.currentHurtTime = r.dyingTime
+		r.entity.SetCurrentSprite(3)
+	}
 	switch r.state {
 	case "hurt":
-		r.entity.state = HurtEntityState
+		r.entity.state = StunnedEntityState
 		if r.currentHurtTime > 0 {
 			r.currentHurtTime -= delta
 		} else {
@@ -84,7 +100,16 @@ func (r *enemy) Update(w *World, delta float64) {
 		}
 		r.entity.state = NothingEntityState
 		break
+	case "dying":
+		r.entity.state = StunnedEntityState
+		if r.currentHurtTime > 0 {
+			r.currentHurtTime -= delta
+		} else {
+			r.entity.state = DeadEntityState
+		}
+		break
 	}
+
 	if r.canSeePlayer {
 		if !canSeePos(w, r.entity.pos, w.player.pos) {
 			r.canSeePlayer = false
@@ -112,6 +137,9 @@ func (r *enemy) Update(w *World, delta float64) {
 }
 
 func (r *enemy) TakeDamage(amount int) {
+	if r.state == "dying" {
+		return
+	}
 	r.entity.health -= amount
 	r.currentHurtTime = r.hurtTime
 	r.entity.SetCurrentSprite(1)

@@ -41,6 +41,7 @@ func NewRenderer() *Renderer {
 			"enemy-ball-move":   LoadImage("enemy-ball-move.png"),
 			"enemy-ball-hurt":   LoadImage("enemy-ball-hurt.png"),
 			"enemy-ball-attack": LoadImage("enemy-ball-attack.png"),
+			"enemy-ball-die":    LoadImage("enemy-ball-die.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -122,7 +123,7 @@ func (r *Renderer) drawHud(w *World) {
 	RenderText(r.image, fmt.Sprintf("%d", w.player.ammo), int(ammoPos.x+8), 7)
 	RenderText(r.image, fmt.Sprintf("%d", w.player.health), int(healthPos.x+8), 7)
 
-	RenderText(r.image, "find the portal to escape the maze!\nlots of love,\nbad wizard.", 32, 32)
+	//RenderText(r.image, "find the portal to escape the maze!\nlots of love,\nbad wizard.", 32, 32)
 }
 
 func (r *Renderer) drawScaledImage(pos vector, img image.Image, frame int, textureWidth int, scale int) {
@@ -288,7 +289,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	}
 }
 
-var fakeLightEnabled = true
+var fakeLightEnabled = false
 
 func fakeLight(c color.RGBA, distance float64) color.RGBA {
 	if !fakeLightEnabled {

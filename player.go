@@ -42,7 +42,7 @@ func NewPlayer(pos vector) *player {
 			y: 0,
 		},
 		pos:         pos,
-		fireRateMax: 200.0, // millis
+		fireRateMax: 800.0, // millis
 		ammo:        10,
 		width:       0.5,
 		health:      3,
@@ -51,7 +51,7 @@ func NewPlayer(pos vector) *player {
 			numTime:   0.1 * 1000,
 			autoplay:  false,
 		},
-		showMiniMap: true,
+		showMiniMap: false,
 	}
 }
 
