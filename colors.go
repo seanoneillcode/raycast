@@ -27,6 +27,27 @@ var playerColor = color.RGBA{
 	A: 1,
 }
 
+var hurtScreenFlashColor = color.RGBA{
+	R: 117,
+	G: 0,
+	B: 0,
+	A: 1,
+}
+
+var ammoPickupScreenFlashColor = color.RGBA{
+	R: 0,
+	G: 187,
+	B: 255,
+	A: 1,
+}
+
+var healthPickupScreenFlashColor = color.RGBA{
+	R: 255,
+	G: 0,
+	B: 93,
+	A: 1,
+}
+
 var unseenColor = color.RGBA{
 	R: 60,
 	G: 60,

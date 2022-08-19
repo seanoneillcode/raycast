@@ -70,6 +70,11 @@ func (r *Renderer) Render(screen *ebiten.Image, w *World) {
 	// final render to screen
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(GlobalScale, GlobalScale)
+	if w.player.screenFlashTimer > 0 {
+		screen.Fill(w.player.screenFlashColor)
+		scale := 1 - (w.player.screenFlashTimer / screenFlashTime)
+		op.ColorM.Scale(1, 1, 1, scale)
+	}
 	screen.DrawImage(r.image, op)
 }
 

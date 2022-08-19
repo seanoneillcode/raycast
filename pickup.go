@@ -46,12 +46,16 @@ func (r *pickup) Update(w *World, delta float64) {
 				if w.player.ammo > maxAmmo {
 					w.player.ammo = maxAmmo
 				}
+				w.player.screenFlashTimer = screenFlashTime
+				w.player.screenFlashColor = ammoPickupScreenFlashColor
 				break
 			case healthPickupType:
 				w.player.health += r.amount
 				if w.player.health > maxHealth {
 					w.player.health = maxHealth
 				}
+				w.player.screenFlashTimer = screenFlashTime
+				w.player.screenFlashColor = healthPickupScreenFlashColor
 				break
 			}
 			r.entity.state = DeadEntityState

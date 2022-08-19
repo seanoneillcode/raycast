@@ -4,27 +4,31 @@ import (
 	"errors"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"image/color"
 	"math"
 )
 
 const checkDistance = 0.7
 const maxAmmo = 30
 const maxHealth = 10
+const screenFlashTime = 200 // millis
 
 type player struct {
-	pos             vector
-	dir             vector
-	strafeDir       vector
-	plane           vector
-	oldMousePos     int
-	ammo            int
-	fireRateTimer   float64
-	fireRateMax     float64
-	width           float64
-	health          int
-	weaponAnimation *animation
-	useWeaponTimer  float64
-	showMiniMap     bool
+	pos              vector
+	dir              vector
+	strafeDir        vector
+	plane            vector
+	oldMousePos      int
+	ammo             int
+	fireRateTimer    float64
+	fireRateMax      float64
+	width            float64
+	health           int
+	weaponAnimation  *animation
+	useWeaponTimer   float64
+	showMiniMap      bool
+	screenFlashColor color.RGBA
+	screenFlashTimer float64
 }
 
 func NewPlayer(pos vector) *player {
@@ -136,6 +140,10 @@ func (r *player) Update(w *World, delta float64) error {
 	r.strafeDir.y = oldStrafeX*math.Sin(-rotation) + r.strafeDir.y*math.Cos(-rotation)
 	r.oldMousePos = mx
 
+	if r.screenFlashTimer > 0 {
+		r.screenFlashTimer -= delta
+	}
+
 	// syscalls
 	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
 		return errors.New("normal escape termination")
@@ -173,5 +181,6 @@ func (r *player) Move(w *World, delta float64, dir vector) {
 
 func (r *player) TakeDamage(amount int) {
 	r.health -= 1
-	// flash red or something
+	r.screenFlashTimer = screenFlashTime
+	r.screenFlashColor = hurtScreenFlashColor
 }
