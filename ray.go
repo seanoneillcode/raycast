@@ -64,36 +64,81 @@ func calculateRay(w *World, cameraX float64) ray {
 
 	var texture string
 	var side = 0
+	var t *tile
+
 	for !tileFound && distance < maxDistance {
 
-		if rayLength.x < rayLength.y {
-			rayMapPos.x += step.x
-			distance += rayLength.x
-			rayLength.x += rayUnitStepSize.x
-			side = 0
-		} else {
-			rayMapPos.y += step.y
-			distance += rayLength.y
-			rayLength.y += rayUnitStepSize.y
-			side = 1
-		}
-
-		t := w.getTile(rayMapPos.x, rayMapPos.y)
+		t = w.getTile(rayMapPos.x, rayMapPos.y)
 		if t != nil {
 			texture = t.wallTex
 			if t.block {
 				tileFound = true
+				if t.door {
+					texture = t.doorTex
+					if t.north {
+						if rayLength.y > rayLength.x && rayUnitStepSize.y < 0.5 {
+							side = 0
+							texture = t.doorTex
+						} else {
+							rayLength.y = rayLength.y - (rayUnitStepSize.y / 2)
+
+						}
+					} else {
+						if rayLength.x > rayLength.y && rayUnitStepSize.x < 0.5 {
+							side = 1
+							texture = t.doorTex
+						} else {
+							rayLength.x = rayLength.x - (rayUnitStepSize.x / 2)
+						}
+					}
+				}
+			}
+			if t.door {
+				if t.north {
+					if rayLength.y > rayLength.x {
+						tileFound = true
+						side = 0
+						texture = t.wallTex
+					}
+				} else {
+					if rayLength.x > rayLength.y {
+						tileFound = true
+						side = 1
+						texture = t.wallTex
+					}
+				}
 			}
 			t.seen = true
+		}
+		if !tileFound {
+			if rayLength.x < rayLength.y {
+				rayMapPos.x += step.x
+				distance = rayLength.x
+				rayLength.x += rayUnitStepSize.x
+				side = 0
+			} else {
+				rayMapPos.y += step.y
+				distance = rayLength.y
+				rayLength.y += rayUnitStepSize.y
+				side = 1
+			}
 		}
 	}
 
 	perpWallDist := 256.0
 	if tileFound {
-		if side == 0 {
-			perpWallDist = rayLength.x - rayUnitStepSize.x
+		if t != nil && t.door {
+			if side == 0 {
+				perpWallDist = rayLength.x
+			} else {
+				perpWallDist = rayLength.y
+			}
 		} else {
-			perpWallDist = rayLength.y - rayUnitStepSize.y
+			if side == 0 {
+				perpWallDist = rayLength.x - rayUnitStepSize.x
+			} else {
+				perpWallDist = rayLength.y - rayUnitStepSize.y
+			}
 		}
 	}
 
