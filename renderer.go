@@ -338,7 +338,7 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 		rayDirY1 := w.player.dir.y + w.player.plane.y
 
 		// Current y position compared to the center of the screen (the horizon)
-		p := y - ScreenHeight/2
+		p := y - ScreenHeight/2 + 1
 
 		// Vertical position of the camera.
 		// NOTE: with 0.5, it's exactly in the center between floor and ceiling,
