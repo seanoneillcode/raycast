@@ -35,16 +35,16 @@ type player struct {
 func NewPlayer(pos vector) *player {
 	return &player{
 		dir: vector{
-			x: 0,
-			y: -1,
-		},
-		plane: vector{
-			x: 0.5,
-			y: 0,
-		},
-		strafeDir: vector{
 			x: 1,
 			y: 0,
+		},
+		plane: vector{
+			x: 0,
+			y: 0.5,
+		},
+		strafeDir: vector{
+			x: 0,
+			y: 1,
 		},
 		pos:         pos,
 		fireRateMax: 800.0, // millis

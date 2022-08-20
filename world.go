@@ -56,6 +56,7 @@ type World struct {
 	bullets []*bullet
 	enemies []*enemy
 	pickups []*pickup
+	scenery []*scenery
 	effects []*effect
 	portals []*portal
 
@@ -84,6 +85,11 @@ func NewWorld(width, height int) *World {
 		pickups: []*pickup{
 			NewPickup(ammoPickupType, 20, vector{x: 10.5, y: 5.5}),
 			NewPickup(healthPickupType, 3, vector{x: 8.5, y: 7.5}),
+		},
+		scenery: []*scenery{
+			NewScenery("candlestick", vector{x: 1.5, y: 1.5}),
+			NewScenery("candlestick", vector{x: 4.5, y: 1.5}),
+			NewScenery("candlestick", vector{x: 4.5, y: 4.5}),
 		},
 		portals: []*portal{
 			NewPortal(vector{x: 2.5, y: 6.5}),
@@ -135,6 +141,17 @@ func (w *World) Update(delta float64) error {
 	}
 
 	hasDead = false
+	for _, b := range w.scenery {
+		b.Update(w, delta)
+		if b.entity.state == DeadEntityState {
+			hasDead = true
+		}
+	}
+	if hasDead {
+		cleanDeadScenery(w)
+	}
+
+	hasDead = false
 	for _, b := range w.effects {
 		b.Update(delta)
 		if b.entity.state == DeadEntityState {
@@ -155,6 +172,16 @@ func (w *World) Update(delta float64) error {
 	}
 
 	return nil
+}
+
+func cleanDeadScenery(w *World) {
+	temp := w.scenery[:0]
+	for _, b := range w.scenery {
+		if b.entity.state != DeadEntityState {
+			temp = append(temp, b)
+		}
+	}
+	w.scenery = temp
 }
 
 func cleanDeadPickup(w *World) {
@@ -273,7 +300,7 @@ func initWorld(w *World) {
 				w.tiles[ix][iy].block = true
 				w.tiles[ix][iy].door = true
 				w.tiles[ix][iy].doorTex = "door"
-				w.tiles[ix][iy].wallTex = "wall"
+				w.tiles[ix][iy].wallTex = "door-wall"
 				w.tiles[ix][iy].floorTex = "door-floor"
 				w.tiles[ix][iy].ceilingTex = "door-floor"
 			}
@@ -285,7 +312,7 @@ func initWorld(w *World) {
 				w.tiles[ix][iy].block = true
 				w.tiles[ix][iy].north = true
 				w.tiles[ix][iy].door = true
-				w.tiles[ix][iy].wallTex = "wall"
+				w.tiles[ix][iy].wallTex = "door-wall"
 				w.tiles[ix][iy].doorTex = "door"
 				w.tiles[ix][iy].floorTex = "door-floor"
 				w.tiles[ix][iy].ceilingTex = "door-floor"

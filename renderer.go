@@ -34,6 +34,7 @@ func NewRenderer() *Renderer {
 			"bullet":            LoadImage("bullet.png"),
 			"door":              LoadImage("door.png"),
 			"door-floor":        LoadImage("door-floor.png"),
+			"door-wall":         LoadImage("door-wall.png"),
 			"soul":              LoadImage("soul.png"),
 			"ammo":              LoadImage("ammo.png"),
 			"ammo-icon":         LoadImage("ammo-icon.png"),
@@ -46,6 +47,7 @@ func NewRenderer() *Renderer {
 			"enemy-ball-hurt":   LoadImage("enemy-ball-hurt.png"),
 			"enemy-ball-attack": LoadImage("enemy-ball-attack.png"),
 			"enemy-ball-die":    LoadImage("enemy-ball-die.png"),
+			"candlestick":       LoadImage("candlestick.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -170,6 +172,9 @@ func (r *Renderer) drawSprites(w *World) {
 	for _, b := range w.portals {
 		sprites = append(sprites, b.entity.CurrentSprite())
 	}
+	for _, b := range w.scenery {
+		sprites = append(sprites, b.entity.CurrentSprite())
+	}
 
 	for _, s := range sprites {
 		s.distance = (w.player.pos.x-s.pos.x)*(w.player.pos.x-s.pos.x) + (w.player.pos.y-s.pos.y)*(w.player.pos.y-s.pos.y)
@@ -276,6 +281,9 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		texture = ray.texture
 	}
 	img := r.textures[texture]
+	if img == nil {
+		fmt.Println("sadfa")
+	}
 
 	x := index
 	step := float64(TextureHeight) / float64(lineHeight)
@@ -286,6 +294,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		texPos += step
 
 		c := img.At(texX, texY)
+
 		rgba := color.RGBAModel.Convert(c).(color.RGBA)
 		rgba = fakeLight(rgba, ray.distance)
 		if ray.side == 0 {
