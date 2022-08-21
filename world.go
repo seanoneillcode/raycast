@@ -1,6 +1,9 @@
 package raycast
 
-import "math"
+import (
+	"math"
+	"raycast.com/level"
+)
 
 const moveAmount = 0.002
 const rotateAmount = 0.0005
@@ -59,49 +62,31 @@ type World struct {
 	scenery []*scenery
 	effects []*effect
 	portals []*portal
-
-	player *player
+	grid    *level.TiledGrid
+	player  *player
 }
 
-func NewWorld(width, height int) *World {
+func NewWorld() *World {
+	grid := level.NewTileGrid("dungeon.json")
+	tiles := loadTiles(grid)
+	grid.GetObjectData()
 	w := &World{
-		width:  width,
-		height: height,
-		tiles:  make([][]*tile, width*height),
+		width:  grid.Layers[0].Width,
+		height: grid.Layers[0].Height,
+		tiles:  tiles,
 		player: NewPlayer(vector{
 			x: 1.5,
 			y: 3,
 		}),
-		enemies: []*enemy{
-			NewEnemy(vector{x: 8, y: 4}),
-			NewEnemy(vector{x: 13.5, y: 6}),
-			NewEnemy(vector{x: 11, y: 11}),
-			NewEnemy(vector{x: 6.5, y: 13}),
-			NewEnemy(vector{x: 10.5, y: 7.5}),
-			NewEnemy(vector{x: 7.5, y: 9.5}),
-		},
+		enemies: []*enemy{},
 		bullets: []*bullet{},
 		effects: []*effect{},
-		pickups: []*pickup{
-			NewPickup(ammoPickupType, 20, vector{x: 10.5, y: 5.5}),
-			NewPickup(healthPickupType, 3, vector{x: 8.5, y: 7.5}),
-		},
-		scenery: []*scenery{
-			NewScenery("candlestick", vector{x: 1.5, y: 1.5}),
-			NewScenery("candlestick", vector{x: 4.5, y: 1.5}),
-			NewScenery("candlestick", vector{x: 4.5, y: 4.5}),
-		},
-		portals: []*portal{
-			NewPortal(vector{x: 2.5, y: 6.5}),
-		},
+		pickups: []*pickup{},
+		scenery: []*scenery{},
+		grid:    grid,
+		portals: []*portal{},
 	}
-	for x := 0; x < w.width; x++ {
-		w.tiles[x] = make([]*tile, width*height)
-		for y := 0; y < w.height; y++ {
-			w.tiles[x][y] = &tile{}
-		}
-	}
-	initWorld(w)
+	loadObjectData(grid, w)
 	return w
 }
 
@@ -254,70 +239,84 @@ func (w *World) AddEffect(image string, pos vector) {
 }
 
 func (w *World) CreatePickup(name string, pos vector) {
-
 	switch name {
 	case "soul":
 		w.pickups = append(w.pickups, NewPickup(soulPickupType, 1, pos))
 		break
 	}
-
 }
 
-func initWorld(w *World) {
-
-	nums := [][]uint8{
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-		{1, 3, 3, 3, 3, 1, 0, 1, 1, 0, 0, 2, 0, 0, 0, 1},
-		{1, 3, 3, 3, 3, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-		{1, 3, 3, 3, 3, 2, 0, 0, 0, 0, 0, 1, 1, 1, 0, 1},
-		{1, 3, 3, 3, 3, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1},
-		{1, 4, 1, 1, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1},
-		{1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1},
-		{1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1},
-		{1, 1, 4, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 4, 1, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 1, 0, 3, 3, 3, 3, 3, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 0, 0, 0, 0, 1},
-		{1, 0, 0, 0, 1, 0, 3, 3, 3, 3, 3, 0, 1, 0, 0, 1},
-		{1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1},
-		{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-	}
-
-	for iy, y := range nums {
-		for ix, x := range y {
-			if x == 0 {
-				w.tiles[ix][iy].wallTex = "wall"
-				w.tiles[ix][iy].floorTex = "floor"
-				w.tiles[ix][iy].ceilingTex = "ceiling"
-			}
-			if x == 1 {
-				w.tiles[ix][iy].block = true
-				w.tiles[ix][iy].wallTex = "wall"
-				w.tiles[ix][iy].floorTex = "floor"
-				w.tiles[ix][iy].ceilingTex = "ceiling"
-			}
-			if x == 2 {
-				w.tiles[ix][iy].block = true
-				w.tiles[ix][iy].door = true
-				w.tiles[ix][iy].doorTex = "door"
-				w.tiles[ix][iy].wallTex = "door-wall"
-				w.tiles[ix][iy].floorTex = "door-floor"
-				w.tiles[ix][iy].ceilingTex = "door-floor"
-			}
-			if x == 3 {
-				w.tiles[ix][iy].wallTex = "wall"
-				w.tiles[ix][iy].floorTex = "floor"
-			}
-			if x == 4 {
-				w.tiles[ix][iy].block = true
-				w.tiles[ix][iy].north = true
-				w.tiles[ix][iy].door = true
-				w.tiles[ix][iy].wallTex = "door-wall"
-				w.tiles[ix][iy].doorTex = "door"
-				w.tiles[ix][iy].floorTex = "door-floor"
-				w.tiles[ix][iy].ceilingTex = "door-floor"
+func loadTiles(grid *level.TiledGrid) [][]*tile {
+	tilesRow := make([][]*tile, grid.Layers[0].Width)
+	for ix := 0; ix < grid.Layers[0].Width; ix++ {
+		tilesColumn := make([]*tile, grid.Layers[0].Height)
+		for iy := 0; iy < grid.Layers[0].Height; iy++ {
+			td := grid.GetTileData(ix, iy)
+			tilesColumn[iy] = &tile{
+				block:      td.Block,
+				door:       td.Door,
+				north:      td.North,
+				floorTex:   td.FloorTex,
+				wallTex:    td.WallTex,
+				doorTex:    td.DoorTex,
+				ceilingTex: td.CeilingTex,
 			}
 		}
+		tilesRow[ix] = tilesColumn
 	}
 
+	return tilesRow
+}
+
+func loadObjectData(grid *level.TiledGrid, w *World) {
+	const GridTileSize = 16
+	const halfMapTile = 0.5
+	objects := grid.GetObjectData()
+
+	for _, obj := range objects {
+		pos := vector{
+			x: float64(obj.X/GridTileSize) + halfMapTile,
+			y: float64(obj.Y/GridTileSize) + halfMapTile,
+		}
+		switch obj.ObjectType {
+		case "level":
+			if obj.Name == "start" {
+				w.player.pos = pos
+			}
+			if obj.Name == "end" {
+				w.portals = append(w.portals, NewPortal(pos))
+			}
+			break
+		case "scenery":
+			if obj.Name == "candlestick" {
+				w.scenery = append(w.scenery, NewScenery("candlestick", pos))
+			}
+			break
+		case "enemy":
+			if obj.Name == "ball" {
+				w.enemies = append(w.enemies, NewEnemy(pos))
+			}
+			break
+		case "pickup":
+			if obj.Name == "ammo" {
+				w.pickups = append(w.pickups, NewPickup(ammoPickupType, 10, pos))
+			}
+			if obj.Name == "health" {
+				w.pickups = append(w.pickups, NewPickup(healthPickupType, 3, pos))
+			}
+			break
+		}
+
+		//for _, p := range obj.Properties {
+		//	if p.Name == "team" {
+		//		switch p.Value {
+		//		case "1":
+		//			teamOnePositions = append(teamOnePositions, npc)
+		//		case "2":
+		//			teamTwoPositions = append(teamTwoPositions, npc)
+		//		}
+		//	}
+		//}
+
+	}
 }

@@ -13,7 +13,6 @@ const (
 	ScreenHeight  = 256
 	PlayerWidth   = 4
 	GlobalScale   = 1
-	MapSize       = 16
 	NumRays       = 256
 	TextureWidth  = 32
 	TextureHeight = 32
@@ -27,7 +26,7 @@ type Game struct {
 
 func NewGame() *Game {
 	return &Game{
-		world:            NewWorld(MapSize, MapSize),
+		world:            NewWorld(),
 		renderer:         NewRenderer(),
 		lastUpdateCalled: time.Now(),
 	}
