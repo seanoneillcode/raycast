@@ -28,6 +28,7 @@ func NewEnemy(pos vector) *enemy {
 		attackTime: 0.6 * 1000,
 		state:      "wander",
 	}
+	e.entity.speed = 0.003
 	e.entity.dropItem = "soul"
 	e.entity.sprites = []*sprite{
 		{
