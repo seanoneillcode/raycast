@@ -234,3 +234,98 @@ func canSeePos(w *World, startPos vector, targetPos vector) bool {
 
 	return false
 }
+
+func moveRay(w *World, startPos vector, dir vector, distance float64) ray {
+	rayStart := vector{
+		x: startPos.x,
+		y: startPos.y,
+	}
+
+	rayDir := dir
+
+	rayUnitStepSize := vector{
+		x: math.Abs(1 / rayDir.x),
+		y: math.Abs(1 / rayDir.y),
+	}
+
+	if rayUnitStepSize.x == 0 {
+		rayUnitStepSize.x = 111111111
+	}
+	if rayUnitStepSize.y == 0 {
+		rayUnitStepSize.y = 111111111
+	}
+
+	rayMapPos := mapPos{
+		x: int(rayStart.x),
+		y: int(rayStart.y),
+	}
+
+	rayLength := vector{}
+	step := mapPos{}
+
+	if rayDir.x < 0 {
+		step.x = -1
+		rayLength.x = (rayStart.x - float64(rayMapPos.x)) * rayUnitStepSize.x
+	} else {
+		step.x = 1
+		rayLength.x = (float64(rayMapPos.x+1) - rayStart.x) * rayUnitStepSize.x
+	}
+	if rayDir.y < 0 {
+		step.y = -1
+		rayLength.y = (rayStart.y - float64(rayMapPos.y)) * rayUnitStepSize.y
+	} else {
+		step.y = 1
+		rayLength.y = (float64(rayMapPos.y+1) - rayStart.y) * rayUnitStepSize.y
+	}
+
+	tileFound := false
+	currentDistance := 0.0
+
+	var side = 0
+
+	for !tileFound && currentDistance < distance {
+		t := w.getTile(rayMapPos.x, rayMapPos.y)
+		if t != nil {
+			if t.block {
+				tileFound = true
+			}
+		}
+		if !tileFound {
+			if rayLength.x < rayLength.y {
+				rayMapPos.x += step.x
+				distance = rayLength.x
+				rayLength.x += rayUnitStepSize.x
+				side = 0
+			} else {
+				rayMapPos.y += step.y
+				distance = rayLength.y
+				rayLength.y += rayUnitStepSize.y
+				side = 1
+			}
+		}
+	}
+
+	perpWallDist := 256.0
+	if tileFound {
+		if side == 0 {
+			perpWallDist = rayLength.x - rayUnitStepSize.x
+		} else {
+			perpWallDist = rayLength.y - rayUnitStepSize.y
+		}
+	}
+
+	var wallX float64
+	if side == 0 {
+		wallX = rayStart.y + (perpWallDist * rayDir.y)
+	} else {
+		wallX = rayStart.x + (perpWallDist * rayDir.x)
+	}
+	wallX -= math.Floor(wallX)
+
+	return ray{
+		distance: perpWallDist,
+		side:     side,
+		wallX:    wallX,
+		dir:      rayDir,
+	}
+}

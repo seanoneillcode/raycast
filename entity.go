@@ -74,6 +74,7 @@ func (r *entity) SetCurrentSprite(index int) {
 	r.currentSprite = index
 	r.sprites[r.currentSprite].animation.currentFrame = 0
 	r.sprites[r.currentSprite].animation.currentTime = 0
+	r.sprites[r.currentSprite].pos = r.pos
 }
 
 func collides(e1, e2 *entity) bool {
