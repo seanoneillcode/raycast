@@ -86,6 +86,15 @@ func collides(e1, e2 *entity) bool {
 	return withinX && withinY
 }
 
+func collidesWithPlayer(player *player, e2 *entity) bool {
+	if e2.state == DeadEntityState {
+		return false
+	}
+	withinX := math.Abs(player.pos.x-e2.pos.x) < ((player.width + e2.width) / 2)
+	withinY := math.Abs(player.pos.y-e2.pos.y) < ((player.width + e2.width) / 2)
+	return withinX && withinY
+}
+
 func within(p1 vector, p2 vector, distance float64) bool {
 	withinX := math.Abs(p1.x-p2.x) < distance
 	withinY := math.Abs(p1.y-p2.y) < distance

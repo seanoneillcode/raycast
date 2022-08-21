@@ -7,7 +7,8 @@ import (
 
 const moveAmount = 0.002
 const rotateAmount = 0.0005
-const bulletSpeed = 0.01
+const bulletSpeed = 0.008
+const bulletWidth = 0.01
 
 type vector struct {
 	x float64
@@ -294,7 +295,10 @@ func loadObjectData(grid *level.TiledGrid, w *World) {
 			break
 		case "enemy":
 			if obj.Name == "ball" {
-				w.enemies = append(w.enemies, NewEnemy(pos))
+				w.enemies = append(w.enemies, NewEnemy(ballEnemyType, pos))
+			}
+			if obj.Name == "blue" {
+				w.enemies = append(w.enemies, NewEnemy(blueEnemyType, pos))
 			}
 			break
 		case "pickup":
