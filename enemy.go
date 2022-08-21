@@ -1,16 +1,9 @@
 package raycast
 
-import (
-	"math"
-	"math/rand"
-)
-
 type enemy struct {
 	entity            *entity
 	hurtTime          float64
 	dyingTime         float64
-	wanderTime        float64
-	currentWanderTime float64
 	currentHurtTime   float64
 	attackTime        float64
 	currentAttackTime float64
@@ -24,9 +17,7 @@ func NewEnemy(pos vector) *enemy {
 		entity:     NewEntity("enemy-ball-move", pos),
 		hurtTime:   0.6 * 1000,
 		dyingTime:  0.4 * 1000,
-		wanderTime: 3 * 1000,
 		attackTime: 0.6 * 1000,
-		state:      "wander",
 	}
 	e.entity.speed = 0.003
 	e.entity.dropItem = "soul"
@@ -89,15 +80,8 @@ func (r *enemy) Update(w *World, delta float64) {
 			r.currentHurtTime -= delta
 		} else {
 			r.entity.SetCurrentSprite(0)
-			r.state = "wander"
+			r.state = "move"
 			r.entity.state = NothingEntityState
-		}
-		break
-	case "wander":
-		if r.currentWanderTime > 0 {
-			r.currentWanderTime -= delta * r.entity.speed
-		} else {
-			r.wander(w)
 		}
 		break
 	case "move":
@@ -106,7 +90,6 @@ func (r *enemy) Update(w *World, delta float64) {
 			r.state = "attack"
 			r.currentAttackTime = r.attackTime
 		}
-
 		break
 	case "attack":
 		if r.currentAttackTime > 0 {
@@ -149,13 +132,9 @@ func (r *enemy) Update(w *World, delta float64) {
 		if within(r.entity.pos, r.lastKnowPlayerPos, 0.25) {
 			r.entity.dir.x = 0
 			r.entity.dir.y = 0
-			r.state = "wander"
 		}
 		if canSeePos(w, r.entity.pos, w.player.pos) {
 			r.canSeePlayer = true
-			if r.state == "wander" {
-				r.state = "move"
-			}
 		}
 	}
 }
@@ -168,19 +147,4 @@ func (r *enemy) TakeDamage(amount int) {
 	r.currentHurtTime = r.hurtTime
 	r.entity.SetCurrentSprite(1)
 	r.state = "hurt"
-}
-
-func (r *enemy) wander(w *World) {
-	r.currentWanderTime = 0
-	r.state = "wander"
-	dir := vector{
-		x: 2*(rand.Float64()) - 1,
-		y: 2*(rand.Float64()) - 1,
-	}
-	mRay := moveRay(w, r.entity.pos, dir, 3)
-	if mRay.distance == 256 {
-		return
-	}
-	r.entity.dir = mRay.dir
-	r.currentWanderTime = math.Min(mRay.distance-r.entity.width, 4) // move this far in this time
 }
