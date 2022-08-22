@@ -4,12 +4,12 @@ type bullet struct {
 	entity *entity
 }
 
-func NewBullet(pos vector, dir vector) *bullet {
+func NewBullet(pos vector, dir vector, speed float64) *bullet {
 	b := &bullet{
 		entity: NewEntity("bullet", pos),
 	}
 	b.entity.dir = dir
-	b.entity.speed = bulletSpeed
+	b.entity.speed = speed
 	b.entity.width = bulletWidth
 	return b
 }

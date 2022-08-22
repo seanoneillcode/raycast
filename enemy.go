@@ -178,7 +178,7 @@ func (r *enemy) Update(w *World, delta float64) {
 						x: w.player.pos.x - r.entity.pos.x,
 						y: w.player.pos.y - r.entity.pos.y,
 					})
-					w.ShootBullet(addVector(r.entity.pos, bulletDir), bulletDir)
+					w.ShootBullet(addVector(r.entity.pos, bulletDir), bulletDir, bulletSpeed/2)
 				}
 				r.entity.SetCurrentSprite(0)
 				r.state = "move"

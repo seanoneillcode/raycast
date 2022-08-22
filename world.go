@@ -7,7 +7,7 @@ import (
 
 const moveAmount = 0.002
 const rotateAmount = 0.0005
-const bulletSpeed = 0.008
+const bulletSpeed = 0.01
 const bulletWidth = 0.01
 
 type vector struct {
@@ -224,8 +224,8 @@ func (w *World) getTile(x, y int) *tile {
 	return w.tiles[x][y]
 }
 
-func (w *World) ShootBullet(pos vector, dir vector) {
-	w.bullets = append(w.bullets, NewBullet(pos, dir))
+func (w *World) ShootBullet(pos vector, dir vector, speed float64) {
+	w.bullets = append(w.bullets, NewBullet(pos, dir, speed))
 }
 
 func (w *World) AddEffect(image string, pos vector) {

@@ -122,7 +122,7 @@ func (r *player) Update(w *World, delta float64) error {
 			r.ammo -= 1
 			r.fireRateTimer = r.fireRateMax
 			posInFrontOfPlayer := addVector(r.pos, scaleVector(r.dir, 0.3))
-			w.ShootBullet(posInFrontOfPlayer, r.dir)
+			w.ShootBullet(posInFrontOfPlayer, r.dir, bulletSpeed)
 			r.weaponAnimation.Play()
 		}
 	}
