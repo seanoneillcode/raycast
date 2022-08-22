@@ -54,17 +54,18 @@ type tile struct {
 }
 
 type World struct {
-	width   int
-	height  int
-	tiles   [][]*tile
-	bullets []*bullet
-	enemies []*enemy
-	pickups []*pickup
-	scenery []*scenery
-	effects []*effect
-	portals []*portal
-	grid    *level.TiledGrid
-	player  *player
+	width       int
+	height      int
+	tiles       [][]*tile
+	bullets     []*bullet
+	enemies     []*enemy
+	pickups     []*pickup
+	scenery     []*scenery
+	effects     []*effect
+	portals     []*portal
+	grid        *level.TiledGrid
+	player      *player
+	soundPlayer *SoundPlayer
 }
 
 func NewWorld() *World {
@@ -72,9 +73,10 @@ func NewWorld() *World {
 	tiles := loadTiles(grid)
 	grid.GetObjectData()
 	w := &World{
-		width:  grid.Layers[0].Width,
-		height: grid.Layers[0].Height,
-		tiles:  tiles,
+		soundPlayer: NewSoundPlayer(),
+		width:       grid.Layers[0].Width,
+		height:      grid.Layers[0].Height,
+		tiles:       tiles,
 		player: NewPlayer(vector{
 			x: 1.5,
 			y: 3,
@@ -88,11 +90,21 @@ func NewWorld() *World {
 		portals: []*portal{},
 	}
 	loadObjectData(grid, w)
+	w.soundPlayer.LoadSound("pickup-health")
+	w.soundPlayer.LoadSound("pickup-ammo")
+	w.soundPlayer.LoadSound("pickup-soul")
+	w.soundPlayer.LoadSound("door")
+	w.soundPlayer.LoadSound("crack")
+	w.soundPlayer.LoadSound("player-hurt")
+	w.soundPlayer.LoadSound("bullet-hit")
+	w.soundPlayer.LoadSound("enemy-die")
+	w.soundPlayer.LoadSound("enemy-hurt")
+	w.soundPlayer.LoadSound("enemy-shoot")
 	return w
 }
 
 func (w *World) Update(delta float64) error {
-
+	w.soundPlayer.Update(delta)
 	hasDead := false
 	for _, e := range w.enemies {
 		e.Update(w, delta)

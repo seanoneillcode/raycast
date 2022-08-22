@@ -30,6 +30,7 @@ type player struct {
 	showMiniMap      bool
 	screenFlashColor color.RGBA
 	screenFlashTimer float64
+	oldHealth        int
 }
 
 func NewPlayer(pos vector) *player {
@@ -48,9 +49,10 @@ func NewPlayer(pos vector) *player {
 		},
 		pos:         pos,
 		fireRateMax: 800.0, // millis
-		ammo:        10,
+		ammo:        30,
 		width:       0.5,
 		health:      3,
+		oldHealth:   3,
 		weaponAnimation: &animation{
 			numFrames: 4,
 			numTime:   0.1 * 1000,
@@ -61,7 +63,10 @@ func NewPlayer(pos vector) *player {
 }
 
 func (r *player) Update(w *World, delta float64) error {
-
+	if r.oldHealth > r.health {
+		w.soundPlayer.PlaySound("player-hurt")
+	}
+	r.oldHealth = r.health
 	r.weaponAnimation.Update(delta)
 
 	// handle input
@@ -98,10 +103,12 @@ func (r *player) Update(w *World, delta float64) error {
 		if t.door {
 			if t.block {
 				t.block = false
+				w.soundPlayer.PlaySound("door")
 			} else {
 				playerT := w.getTileAtPoint(r.pos)
 				if playerT != t {
 					t.block = true
+					w.soundPlayer.PlaySound("door")
 				}
 			}
 		}
@@ -124,6 +131,7 @@ func (r *player) Update(w *World, delta float64) error {
 			posInFrontOfPlayer := addVector(r.pos, scaleVector(r.dir, 0.3))
 			w.ShootBullet(posInFrontOfPlayer, r.dir, bulletSpeed)
 			r.weaponAnimation.Play()
+			w.soundPlayer.PlaySound("crack")
 		}
 	}
 	r.fireRateTimer -= delta

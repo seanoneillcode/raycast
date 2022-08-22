@@ -60,6 +60,7 @@ func (r *pickup) Update(w *World, delta float64) {
 				}
 				w.player.screenFlashTimer = screenFlashTime
 				w.player.screenFlashColor = ammoPickupScreenFlashColor
+				w.soundPlayer.PlaySound("pickup-ammo")
 				break
 			case healthPickupType:
 				w.player.health += r.amount
@@ -68,11 +69,13 @@ func (r *pickup) Update(w *World, delta float64) {
 				}
 				w.player.screenFlashTimer = screenFlashTime
 				w.player.screenFlashColor = healthPickupScreenFlashColor
+				w.soundPlayer.PlaySound("pickup-health")
 				break
 			case soulPickupType:
 				w.player.souls += r.amount
 				w.player.screenFlashTimer = screenFlashTime
 				w.player.screenFlashColor = soulPickupScreenFlashColor
+				w.soundPlayer.PlaySound("pickup-soul")
 				break
 			}
 			r.entity.state = DeadEntityState

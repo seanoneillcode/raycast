@@ -21,6 +21,7 @@ func (r *bullet) Update(w *World, delta float64) {
 		r.entity.state = DeadEntityState
 		r.entity.undoLastMove(delta)
 		w.AddEffect("bullet-hit", r.entity.pos)
+		w.soundPlayer.PlaySound("bullet-hit")
 	}
 	for _, e := range w.enemies {
 		if collides(r.entity, e.entity) {
@@ -28,14 +29,11 @@ func (r *bullet) Update(w *World, delta float64) {
 			r.entity.undoLastMove(delta)
 			w.AddEffect("bullet-hit", r.entity.pos)
 			e.TakeDamage(1)
-			// do more here, i.e. show effects
 		}
 	}
 	if collidesWithPlayer(w.player, r.entity) {
 		r.entity.state = DeadEntityState
 		r.entity.undoLastMove(delta)
-		//w.AddEffect("bullet-hit", r.entity.pos)
 		w.player.TakeDamage(1)
-		// do more here, i.e. show effects
 	}
 }

@@ -12,6 +12,7 @@ type enemy struct {
 	lastKnowPlayerPos vector
 	enemyType         EnemyType
 	attackRange       float64
+	sound             string
 }
 
 type EnemyType string
@@ -131,6 +132,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 func (r *enemy) Update(w *World, delta float64) {
 	r.entity.Update(delta)
 	if r.entity.health < 0 && r.state != "dying" {
+		w.soundPlayer.PlaySound("enemy-die")
 		r.state = "dying"
 		r.currentHurtTime = r.dyingTime
 		r.entity.SetCurrentSprite(3)
@@ -138,12 +140,17 @@ func (r *enemy) Update(w *World, delta float64) {
 			w.CreatePickup(r.entity.dropItem, r.entity.pos)
 		}
 	}
+	if r.sound != "" {
+		w.soundPlayer.PlaySound(r.sound)
+		r.sound = ""
+	}
 	switch r.state {
 	case "hurt":
 		r.entity.state = StunnedEntityState
 		if r.currentHurtTime > 0 {
 			r.currentHurtTime -= delta
 		} else {
+
 			r.entity.SetCurrentSprite(0)
 			r.state = "move"
 			r.entity.state = NothingEntityState
@@ -164,6 +171,7 @@ func (r *enemy) Update(w *World, delta float64) {
 			} else {
 				if r.entity.CurrentSprite().distance < r.attackRange {
 					w.player.TakeDamage(1)
+					w.soundPlayer.PlaySound("enemy-shoot")
 				}
 				r.entity.SetCurrentSprite(0)
 				r.state = "move"
@@ -179,6 +187,7 @@ func (r *enemy) Update(w *World, delta float64) {
 						y: w.player.pos.y - r.entity.pos.y,
 					})
 					w.ShootBullet(addVector(r.entity.pos, bulletDir), bulletDir, bulletSpeed/2)
+					w.soundPlayer.PlaySound("enemy-shoot")
 				}
 				r.entity.SetCurrentSprite(0)
 				r.state = "move"
@@ -231,4 +240,5 @@ func (r *enemy) TakeDamage(amount int) {
 	r.currentHurtTime = r.hurtTime
 	r.entity.SetCurrentSprite(1)
 	r.state = "hurt"
+	r.sound = "enemy-hurt"
 }
