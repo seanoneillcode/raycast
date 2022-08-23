@@ -12,12 +12,11 @@ type portal struct {
 func NewPortal(pos vector) *portal {
 	timing := 0.2 * 1000
 	p := &portal{
-		entity: NewEntity("portal", pos),
-	}
-	p.entity.sprites[0].animation = &animation{
-		numFrames: 4,
-		numTime:   timing,
-		autoplay:  true,
+		entity: NewEntity(pos, NewAnimatedSprite("portal", &animation{
+			numFrames: 4,
+			numTime:   timing,
+			autoplay:  true,
+		})),
 	}
 	return p
 }

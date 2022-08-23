@@ -26,21 +26,15 @@ const (
 
 const entitySpeed = 0.002
 
-func NewEntity(img string, pos vector) *entity {
+func NewEntity(pos vector, sprites ...*sprite) *entity {
 	return &entity{
-		sprites: []*sprite{
-			{
-				image:    img,
-				pos:      vector{},
-				distance: -1,
-			},
-		},
-		pos:    pos,
-		dir:    vector{},
-		speed:  entitySpeed,
-		health: 1,
-		state:  NothingEntityState,
-		width:  (1.0 / TextureWidth) * 20.0,
+		sprites: sprites,
+		pos:     pos,
+		dir:     vector{},
+		speed:   entitySpeed,
+		health:  1,
+		state:   NothingEntityState,
+		width:   (1.0 / TextureWidth) * 20.0,
 	}
 }
 
@@ -72,9 +66,9 @@ func (r *entity) CurrentSprite() *sprite {
 
 func (r *entity) SetCurrentSprite(index int) {
 	r.currentSprite = index
-	r.sprites[r.currentSprite].animation.currentFrame = 0
-	r.sprites[r.currentSprite].animation.currentTime = 0
-	r.sprites[r.currentSprite].pos = r.pos
+	r.sprites[index].animation.currentFrame = 0
+	r.sprites[index].animation.currentTime = 0
+	r.sprites[index].pos = r.pos
 }
 
 func collides(e1, e2 *entity) bool {

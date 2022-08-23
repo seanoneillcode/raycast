@@ -6,7 +6,7 @@ type bullet struct {
 
 func NewBullet(pos vector, dir vector, speed float64) *bullet {
 	b := &bullet{
-		entity: NewEntity("bullet", pos),
+		entity: NewEntity(pos, NewSprite("bullet")),
 	}
 	b.entity.dir = dir
 	b.entity.speed = speed
@@ -20,14 +20,14 @@ func (r *bullet) Update(w *World, delta float64) {
 	if t.block {
 		r.entity.state = DeadEntityState
 		r.entity.undoLastMove(delta)
-		w.AddEffect("bullet-hit", r.entity.pos)
+		w.AddEffect(bulletHitEffectType, r.entity.pos)
 		w.soundPlayer.PlaySound("thud")
 	}
 	for _, e := range w.enemies {
 		if collides(r.entity, e.entity) {
 			r.entity.state = DeadEntityState
 			r.entity.undoLastMove(delta)
-			w.AddEffect("bullet-hit", r.entity.pos)
+			w.AddEffect(bulletHitEffectType, r.entity.pos)
 			e.TakeDamage(w, 1)
 			w.soundPlayer.PlaySound("thud")
 		}
@@ -36,7 +36,7 @@ func (r *bullet) Update(w *World, delta float64) {
 		if collides(r.entity, e.entity) {
 			r.entity.state = DeadEntityState
 			r.entity.undoLastMove(delta)
-			w.AddEffect("bullet-hit", r.entity.pos)
+			w.AddEffect(bulletHitEffectType, r.entity.pos)
 			e.TakeDamage(w, 1)
 			w.soundPlayer.PlaySound("thud")
 		}

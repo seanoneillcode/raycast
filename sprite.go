@@ -8,6 +8,23 @@ type sprite struct {
 	animation *animation
 }
 
+func NewSprite(imageName string) *sprite {
+	return &sprite{
+		image:    imageName,
+		pos:      vector{},
+		distance: -1,
+	}
+}
+
+func NewAnimatedSprite(imageName string, animation *animation) *sprite {
+	return &sprite{
+		image:     imageName,
+		pos:       vector{},
+		distance:  -1,
+		animation: animation,
+	}
+}
+
 type animation struct {
 	numFrames    int
 	currentFrame int
@@ -19,6 +36,9 @@ type animation struct {
 
 func (r *animation) Update(delta float64) {
 	if !r.autoplay && !r.isPlaying {
+		return
+	}
+	if r.numFrames == 1 || r.numFrames == 0 {
 		return
 	}
 	r.currentTime += delta

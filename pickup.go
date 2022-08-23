@@ -19,29 +19,26 @@ type pickup struct {
 }
 
 func NewPickup(t pickupType, amount int, pos vector) *pickup {
-	var img string
+	var s *sprite
 	switch t {
 	case ammoPickupType:
-		img = "ammo"
+		s = NewSprite("ammo")
 		break
 	case healthPickupType:
-		img = "health"
+		s = NewSprite("health")
 		break
 	case soulPickupType:
-		img = "soul"
-		break
-	}
-	p := &pickup{
-		entity:     NewEntity(img, pos),
-		pickupType: t,
-		amount:     amount,
-	}
-	if t == soulPickupType {
-		p.entity.CurrentSprite().animation = &animation{
+		s = NewAnimatedSprite("soul", &animation{
 			numFrames: 4,
 			numTime:   0.2 * 1000,
 			autoplay:  true,
-		}
+		})
+		break
+	}
+	p := &pickup{
+		entity:     NewEntity(pos, s),
+		pickupType: t,
+		amount:     amount,
 	}
 	return p
 }

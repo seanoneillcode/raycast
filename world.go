@@ -134,7 +134,7 @@ func (w *World) Update(delta float64) error {
 
 	hasDead = false
 	for _, b := range w.scenery {
-		b.Update(w, delta)
+		b.Update(delta)
 		if b.entity.state == DeadEntityState {
 			hasDead = true
 		}
@@ -234,18 +234,8 @@ func (w *World) ShootBullet(pos vector, dir vector, speed float64) {
 	w.bullets = append(w.bullets, NewBullet(pos, dir, speed))
 }
 
-func (w *World) AddEffect(image string, pos vector) {
-	var timing float64
-	var numFrames int
-	switch image {
-	case "bullet-hit":
-		timing = 0.08 * 1000
-		numFrames = 4
-	case "grey-hit-effect":
-		timing = 0.16 * 1000
-		numFrames = 4
-	}
-	w.effects = append(w.effects, NewEffect(image, pos, timing, numFrames))
+func (w *World) AddEffect(effectType effectType, pos vector) {
+	w.effects = append(w.effects, NewEffect(effectType, pos))
 }
 
 func (w *World) CreatePickup(name string, pos vector) {

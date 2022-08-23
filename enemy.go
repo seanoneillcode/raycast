@@ -33,94 +33,60 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 	var ent *entity
 	switch enemyType {
 	case ballEnemyType:
-		ent = NewEntity("enemy-ball-move", pos)
+		ent = NewEntity(
+			pos,
+			NewAnimatedSprite("enemy-ball-move", &animation{
+				numFrames: 4,
+				numTime:   0.2 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("enemy-ball-hurt", &animation{
+				numFrames: 4,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("enemy-ball-attack", &animation{
+				numFrames: 4,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("enemy-ball-die", &animation{
+				numFrames: 4,
+				numTime:   0.1 * 1000,
+				autoplay:  true,
+			}),
+		)
 		ent.speed = 0.003
 		ent.dropItem = "soul"
-		ent.sprites = []*sprite{
-			{
-				image: "enemy-ball-move",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.2 * 1000,
-					autoplay:  true,
-				},
-				distance: -1,
-			},
-			{
-				image: "enemy-ball-hurt",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.15 * 1000,
-					autoplay:  true,
-				},
-			},
-			{
-				image: "enemy-ball-attack",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.15 * 1000,
-					autoplay:  true,
-				},
-			},
-			{
-				image: "enemy-ball-die",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.1 * 1000,
-					autoplay:  true,
-				},
-			},
-		}
 		break
 	case blueEnemyType:
 		e.attackRange = 8 * 8 // distance needs to be squared
 
-		ent = NewEntity("enemy-blue-move", pos)
+		ent = NewEntity(
+			pos,
+			NewAnimatedSprite("enemy-blue-move", &animation{
+				numFrames: 4,
+				numTime:   0.2 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("enemy-blue-hurt", &animation{
+				numFrames: 4,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("enemy-blue-attack", &animation{
+				numFrames: 4,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("enemy-blue-die", &animation{
+				numFrames: 4,
+				numTime:   0.1 * 1000,
+				autoplay:  true,
+			}),
+		)
 		ent.speed = 0.001
 		ent.dropItem = "soul"
-		ent.sprites = []*sprite{
-			{
-				image: "enemy-blue-move",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.2 * 1000,
-					autoplay:  true,
-				},
-				distance: -1,
-			},
-			{
-				image: "enemy-blue-hurt",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.15 * 1000,
-					autoplay:  true,
-				},
-			},
-			{
-				image: "enemy-blue-attack",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.15 * 1000,
-					autoplay:  true,
-				},
-			},
-			{
-				image: "enemy-blue-die",
-				pos:   pos,
-				animation: &animation{
-					numFrames: 4,
-					numTime:   0.1 * 1000,
-					autoplay:  true,
-				},
-			},
-		}
 		break
 	}
 	e.entity = ent
