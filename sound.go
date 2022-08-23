@@ -25,6 +25,12 @@ func NewSoundPlayer() *SoundPlayer {
 	}
 }
 
+func (r *SoundPlayer) SetVolume(volume float64) {
+	for _, p := range r.players {
+		p.SetVolume(volume)
+	}
+}
+
 func (r *SoundPlayer) LoadSound(name string) {
 	type audioStream interface {
 		io.ReadSeeker

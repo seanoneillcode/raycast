@@ -2,7 +2,6 @@ package raycast
 
 import (
 	"math"
-	"raycast.com/level"
 )
 
 const moveAmount = 0.002
@@ -63,33 +62,27 @@ type World struct {
 	scenery     []*scenery
 	effects     []*effect
 	portals     []*portal
-	grid        *level.TiledGrid
 	player      *player
 	soundPlayer *SoundPlayer
 }
 
 func NewWorld() *World {
-	grid := level.NewTileGrid("dungeon.json")
-	tiles := loadTiles(grid)
-	grid.GetObjectData()
+	l := LoadLevel("dungeon.json")
+
 	w := &World{
 		soundPlayer: NewSoundPlayer(),
-		width:       grid.Layers[0].Width,
-		height:      grid.Layers[0].Height,
-		tiles:       tiles,
-		player: NewPlayer(vector{
-			x: 1.5,
-			y: 3,
-		}),
-		enemies: []*enemy{},
+		tiles:       l.tiles,
+		width:       l.width,
+		height:      l.height,
+		player:      NewPlayer(l.objectData.startPos),
+		enemies:     l.objectData.enemies,
+		pickups:     l.objectData.pickups,
+		scenery:     l.objectData.scenery,
+		portals:     l.objectData.portals,
+		// temp state
 		bullets: []*bullet{},
 		effects: []*effect{},
-		pickups: []*pickup{},
-		scenery: []*scenery{},
-		grid:    grid,
-		portals: []*portal{},
 	}
-	loadObjectData(grid, w)
 	w.soundPlayer.LoadSound("pickup-health")
 	w.soundPlayer.LoadSound("pickup-ammo")
 	w.soundPlayer.LoadSound("pickup-soul")
@@ -260,83 +253,5 @@ func (w *World) CreatePickup(name string, pos vector) {
 	case "soul":
 		w.pickups = append(w.pickups, NewPickup(soulPickupType, 1, pos))
 		break
-	}
-}
-
-func loadTiles(grid *level.TiledGrid) [][]*tile {
-	tilesRow := make([][]*tile, grid.Layers[0].Width)
-	for ix := 0; ix < grid.Layers[0].Width; ix++ {
-		tilesColumn := make([]*tile, grid.Layers[0].Height)
-		for iy := 0; iy < grid.Layers[0].Height; iy++ {
-			td := grid.GetTileData(ix, iy)
-			tilesColumn[iy] = &tile{
-				block:      td.Block,
-				door:       td.Door,
-				north:      td.North,
-				floorTex:   td.FloorTex,
-				wallTex:    td.WallTex,
-				doorTex:    td.DoorTex,
-				ceilingTex: td.CeilingTex,
-			}
-		}
-		tilesRow[ix] = tilesColumn
-	}
-
-	return tilesRow
-}
-
-func loadObjectData(grid *level.TiledGrid, w *World) {
-	const GridTileSize = 16
-	const halfMapTile = 0.5
-	objects := grid.GetObjectData()
-
-	for _, obj := range objects {
-		pos := vector{
-			x: float64(obj.X/GridTileSize) + halfMapTile,
-			y: float64(obj.Y/GridTileSize) + halfMapTile,
-		}
-		switch obj.ObjectType {
-		case "level":
-			if obj.Name == "start" {
-				w.player.pos = pos
-			}
-			if obj.Name == "end" {
-				w.portals = append(w.portals, NewPortal(pos))
-			}
-			break
-		case "scenery":
-			if obj.Name == "candlestick" {
-				w.scenery = append(w.scenery, NewScenery("candlestick", pos))
-			}
-			break
-		case "enemy":
-			if obj.Name == "ball" {
-				w.enemies = append(w.enemies, NewEnemy(ballEnemyType, pos))
-			}
-			if obj.Name == "blue" {
-				w.enemies = append(w.enemies, NewEnemy(blueEnemyType, pos))
-			}
-			break
-		case "pickup":
-			if obj.Name == "ammo" {
-				w.pickups = append(w.pickups, NewPickup(ammoPickupType, 10, pos))
-			}
-			if obj.Name == "health" {
-				w.pickups = append(w.pickups, NewPickup(healthPickupType, 3, pos))
-			}
-			break
-		}
-
-		//for _, p := range obj.Properties {
-		//	if p.Name == "team" {
-		//		switch p.Value {
-		//		case "1":
-		//			teamOnePositions = append(teamOnePositions, npc)
-		//		case "2":
-		//			teamTwoPositions = append(teamTwoPositions, npc)
-		//		}
-		//	}
-		//}
-
 	}
 }

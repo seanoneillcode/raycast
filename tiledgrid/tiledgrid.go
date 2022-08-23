@@ -1,4 +1,4 @@
-package level
+package tiledgrid
 
 import (
 	"encoding/json"
