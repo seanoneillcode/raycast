@@ -247,6 +247,9 @@ func (w *World) AddEffect(image string, pos vector) {
 	case "bullet-hit":
 		timing = 0.08 * 1000
 		numFrames = 4
+	case "grey-hit-effect":
+		timing = 0.16 * 1000
+		numFrames = 4
 	}
 	w.effects = append(w.effects, NewEffect(image, pos, timing, numFrames))
 }

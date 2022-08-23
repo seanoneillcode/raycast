@@ -52,6 +52,7 @@ func NewRenderer() *Renderer {
 			"enemy-blue-attack": LoadImage("enemy-blue-attack.png"),
 			"enemy-blue-die":    LoadImage("enemy-blue-die.png"),
 			"candlestick":       LoadImage("candlestick.png"),
+			"grey-hit-effect":   LoadImage("grey-hit-effect.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
