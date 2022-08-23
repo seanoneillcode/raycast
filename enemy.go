@@ -12,7 +12,6 @@ type enemy struct {
 	lastKnowPlayerPos vector
 	enemyType         EnemyType
 	attackRange       float64
-	sound             string
 }
 
 type EnemyType string
@@ -140,10 +139,7 @@ func (r *enemy) Update(w *World, delta float64) {
 			w.CreatePickup(r.entity.dropItem, r.entity.pos)
 		}
 	}
-	if r.sound != "" {
-		w.soundPlayer.PlaySound(r.sound)
-		r.sound = ""
-	}
+
 	switch r.state {
 	case "hurt":
 		r.entity.state = StunnedEntityState
@@ -232,7 +228,7 @@ func (r *enemy) Update(w *World, delta float64) {
 	}
 }
 
-func (r *enemy) TakeDamage(amount int) {
+func (r *enemy) TakeDamage(w *World, amount int) {
 	if r.state == "dying" {
 		return
 	}
@@ -240,5 +236,5 @@ func (r *enemy) TakeDamage(amount int) {
 	r.currentHurtTime = r.hurtTime
 	r.entity.SetCurrentSprite(1)
 	r.state = "hurt"
-	r.sound = "enemy-hurt"
+	w.soundPlayer.PlaySound("chunk")
 }

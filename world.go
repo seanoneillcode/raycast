@@ -95,6 +95,8 @@ func NewWorld() *World {
 	w.soundPlayer.LoadSound("pickup-soul")
 	w.soundPlayer.LoadSound("door")
 	w.soundPlayer.LoadSound("crack")
+	w.soundPlayer.LoadSound("thud")
+	w.soundPlayer.LoadSound("chunk")
 	w.soundPlayer.LoadSound("player-hurt")
 	w.soundPlayer.LoadSound("bullet-hit")
 	w.soundPlayer.LoadSound("enemy-die")
@@ -104,7 +106,6 @@ func NewWorld() *World {
 }
 
 func (w *World) Update(delta float64) error {
-	w.soundPlayer.Update(delta)
 	hasDead := false
 	for _, e := range w.enemies {
 		e.Update(w, delta)

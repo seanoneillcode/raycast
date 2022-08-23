@@ -25,14 +25,6 @@ func NewSoundPlayer() *SoundPlayer {
 	}
 }
 
-func (r *SoundPlayer) Update(delta float64) {
-	for _, p := range r.players {
-		if !p.IsPlaying() {
-			p.Rewind()
-		}
-	}
-}
-
 func (r *SoundPlayer) LoadSound(name string) {
 	type audioStream interface {
 		io.ReadSeeker
@@ -61,8 +53,6 @@ func (r SoundPlayer) PlaySound(name string) {
 		fmt.Println("failed to get player for sound: ", name)
 		return
 	}
-	if p.IsPlaying() {
-		p.Rewind()
-	}
+	p.Rewind() // we need to rewind the tape
 	p.Play()
 }
