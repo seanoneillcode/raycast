@@ -7,9 +7,10 @@ import (
 type pickupType string
 
 const (
-	ammoPickupType   pickupType = "ammo"
-	healthPickupType pickupType = "health"
-	soulPickupType   pickupType = "soul"
+	ammoPickupType    pickupType = "ammo"
+	healthPickupType  pickupType = "health"
+	soulPickupType    pickupType = "soul"
+	crystalPickupType pickupType = "crystal"
 )
 
 type pickup struct {
@@ -34,6 +35,13 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 			autoplay:  true,
 		})
 		break
+	case crystalPickupType:
+		s = NewAnimatedSprite("book", &animation{
+			numFrames: 4,
+			numTime:   0.4 * 1000,
+			autoplay:  true,
+		})
+		break
 	}
 	p := &pickup{
 		entity:     NewEntity(pos, s),
@@ -49,33 +57,43 @@ func (r *pickup) Update(w *World, delta float64) {
 		withinX := math.Abs(w.player.pos.x-r.entity.pos.x) < ((w.player.width + r.entity.width) / 2)
 		withinY := math.Abs(w.player.pos.y-r.entity.pos.y) < ((w.player.width + r.entity.width) / 2)
 		if withinX && withinY {
-			switch r.pickupType {
-			case ammoPickupType:
-				w.player.ammo += r.amount
-				if w.player.ammo > maxAmmo {
-					w.player.ammo = maxAmmo
-				}
-				w.player.screenFlashTimer = screenFlashTime
-				w.player.screenFlashColor = ammoPickupScreenFlashColor
-				w.soundPlayer.PlaySound("pickup-ammo")
-				break
-			case healthPickupType:
-				w.player.health += r.amount
-				if w.player.health > maxHealth {
-					w.player.health = maxHealth
-				}
-				w.player.screenFlashTimer = screenFlashTime
-				w.player.screenFlashColor = healthPickupScreenFlashColor
-				w.soundPlayer.PlaySound("pickup-health")
-				break
-			case soulPickupType:
-				w.player.souls += r.amount
-				w.player.screenFlashTimer = screenFlashTime
-				w.player.screenFlashColor = soulPickupScreenFlashColor
-				w.soundPlayer.PlaySound("pickup-soul")
-				break
-			}
+			handleGettingPickedUp(w, r)
 			r.entity.state = DeadEntityState
 		}
+	}
+}
+
+func handleGettingPickedUp(w *World, p *pickup) {
+	switch p.pickupType {
+	case ammoPickupType:
+		w.player.ammo += p.amount
+		if w.player.ammo > maxAmmo {
+			w.player.ammo = maxAmmo
+		}
+		w.player.screenFlashTimer = screenFlashTime
+		w.player.screenFlashColor = ammoPickupScreenFlashColor
+		w.soundPlayer.PlaySound("pickup-ammo")
+		break
+	case healthPickupType:
+		w.player.health += p.amount
+		if w.player.health > maxHealth {
+			w.player.health = maxHealth
+		}
+		w.player.screenFlashTimer = screenFlashTime
+		w.player.screenFlashColor = healthPickupScreenFlashColor
+		w.soundPlayer.PlaySound("pickup-health")
+		break
+	case soulPickupType:
+		w.player.souls += p.amount
+		w.player.screenFlashTimer = screenFlashTime
+		w.player.screenFlashColor = soulPickupScreenFlashColor
+		w.soundPlayer.PlaySound("pickup-soul")
+		break
+	case crystalPickupType:
+		w.player.souls += p.amount
+		w.player.screenFlashTimer = screenFlashTime
+		w.player.screenFlashColor = soulPickupScreenFlashColor
+		w.soundPlayer.PlaySound("pickup-soul")
+		break
 	}
 }

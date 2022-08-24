@@ -10,6 +10,7 @@ type effectType string
 const (
 	sceneryDestroyedEffectType = "scenery-destroyed"
 	bulletHitEffectType        = "bullet-hit"
+	explosionEffectType        = "explosion"
 )
 
 func NewEffect(effectType effectType, pos vector) *effect {
@@ -26,6 +27,11 @@ func NewEffect(effectType effectType, pos vector) *effect {
 		timing = 0.16 * 1000
 		numFrames = 4
 		img = "grey-hit-effect"
+		break
+	case explosionEffectType:
+		timing = 0.08 * 1000
+		numFrames = 8
+		img = "explosion"
 		break
 	}
 	e := &effect{

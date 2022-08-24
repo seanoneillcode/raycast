@@ -95,6 +95,9 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 			if obj.Name == "health" {
 				objData.pickups = append(objData.pickups, NewPickup(healthPickupType, 3, pos))
 			}
+			if obj.Name == "crystal" {
+				objData.pickups = append(objData.pickups, NewPickup(crystalPickupType, 1, pos))
+			}
 			break
 		}
 		//for _, p := range obj.Properties {
