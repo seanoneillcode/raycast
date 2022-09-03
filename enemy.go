@@ -102,7 +102,7 @@ func (r *enemy) Update(w *World, delta float64) {
 		r.currentHurtTime = r.dyingTime
 		r.entity.SetCurrentSprite(3)
 		if r.entity.dropItem != "" {
-			w.CreatePickup(r.entity.dropItem, r.entity.pos)
+			w.CreateEntity(r.entity.dropItem, r.entity.pos)
 		}
 	}
 

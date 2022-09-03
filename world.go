@@ -238,23 +238,13 @@ func (w *World) AddEffect(effectType effectType, pos vector) {
 	w.effects = append(w.effects, NewEffect(effectType, pos))
 }
 
-func (w *World) CreatePickup(name string, pos vector) {
+func (w *World) CreateEntity(name string, pos vector) {
 	switch name {
 	case "soul":
 		w.pickups = append(w.pickups, NewPickup(soulPickupType, 1, pos))
-		break
-	case "barrel":
-		s := NewSprite("barrel")
-		s.height = 0.5
-		w.scenery = append(w.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "candlestick"))
-		break
-	case "candlestick":
-		s := NewAnimatedSprite("candlestick", &animation{
-			numFrames: 4,
-			numTime:   0.2 * 1000,
-			autoplay:  true,
-		})
-		w.scenery = append(w.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "barrel"))
-		break
+	case "health":
+		w.pickups = append(w.pickups, NewPickup(healthPickupType, 1, pos))
+	case "ammo":
+		w.pickups = append(w.pickups, NewPickup(ammoPickupType, 5, pos))
 	}
 }

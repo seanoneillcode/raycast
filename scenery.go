@@ -30,7 +30,7 @@ func (r *scenery) TakeDamage(w *World, amount int) {
 		w.AddEffect(r.effect, r.entity.pos)
 		w.soundPlayer.PlaySound(r.sound)
 		if r.entity.dropItem != "" {
-			w.CreatePickup(r.entity.dropItem, r.entity.pos)
+			w.CreateEntity(r.entity.dropItem, r.entity.pos)
 		}
 	}
 }
