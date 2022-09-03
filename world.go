@@ -243,5 +243,18 @@ func (w *World) CreatePickup(name string, pos vector) {
 	case "soul":
 		w.pickups = append(w.pickups, NewPickup(soulPickupType, 1, pos))
 		break
+	case "barrel":
+		s := NewSprite("barrel")
+		s.height = 0.5
+		w.scenery = append(w.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "candlestick"))
+		break
+	case "candlestick":
+		s := NewAnimatedSprite("candlestick", &animation{
+			numFrames: 4,
+			numTime:   0.2 * 1000,
+			autoplay:  true,
+		})
+		w.scenery = append(w.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "barrel"))
+		break
 	}
 }

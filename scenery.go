@@ -2,15 +2,18 @@ package raycast
 
 type scenery struct {
 	entity *entity
+	effect effectType
+	sound  string
 }
 
-func NewScenery(img string, pos vector) *scenery {
+func NewScenery(sprite *sprite, pos vector, effect effectType, sound string, dropItem string) *scenery {
 	p := &scenery{
-		entity: NewEntity(pos, NewAnimatedSprite(img, &animation{
-			numFrames: 4,
-			numTime:   0.2 * 1000,
-			autoplay:  true,
-		})),
+		entity: NewEntity(pos, sprite),
+		effect: effect,
+		sound:  sound,
+	}
+	if dropItem != "" {
+		p.entity.dropItem = dropItem
 	}
 	p.entity.health = 0
 	return p
@@ -24,7 +27,10 @@ func (r *scenery) TakeDamage(w *World, amount int) {
 	r.entity.health -= amount
 	if r.entity.health < 0 {
 		r.entity.state = DeadEntityState
-		w.AddEffect(sceneryDestroyedEffectType, r.entity.pos)
-		w.soundPlayer.PlaySound("enemy-hurt")
+		w.AddEffect(r.effect, r.entity.pos)
+		w.soundPlayer.PlaySound(r.sound)
+		if r.entity.dropItem != "" {
+			w.CreatePickup(r.entity.dropItem, r.entity.pos)
+		}
 	}
 }

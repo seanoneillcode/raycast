@@ -77,7 +77,17 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 			break
 		case "scenery":
 			if obj.Name == "candlestick" {
-				objData.scenery = append(objData.scenery, NewScenery("candlestick", pos))
+				s := NewAnimatedSprite("candlestick", &animation{
+					numFrames: 4,
+					numTime:   0.2 * 1000,
+					autoplay:  true,
+				})
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "barrel"))
+			}
+			if obj.Name == "barrel" {
+				s := NewSprite("barrel")
+				s.height = 0.5
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "candlestick"))
 			}
 			break
 		case "enemy":
