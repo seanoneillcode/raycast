@@ -22,6 +22,7 @@ const (
 	DeadEntityState    EntityState = "dead"
 	NothingEntityState EntityState = "nothing"
 	StunnedEntityState EntityState = "stunned"
+	StoppedEntityState EntityState = "stopped"
 )
 
 const entitySpeed = 0.002

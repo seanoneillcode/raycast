@@ -89,6 +89,14 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 				s.height = 0.5
 				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", ""))
 			}
+			if obj.Name == "tree" {
+				s := NewSprite("tree")
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", ""))
+			}
+			if obj.Name == "bush" {
+				s := NewSprite("bush")
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", ""))
+			}
 			break
 		case "enemy":
 			if obj.Name == "ball" {
@@ -96,6 +104,12 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 			}
 			if obj.Name == "blue" {
 				objData.enemies = append(objData.enemies, NewEnemy(blueEnemyType, pos))
+			}
+			if obj.Name == "blob" {
+				objData.enemies = append(objData.enemies, NewEnemy(blobEnemyType, pos))
+			}
+			if obj.Name == "alien" {
+				objData.enemies = append(objData.enemies, NewEnemy(alienEnemyType, pos))
 			}
 			break
 		case "pickup":

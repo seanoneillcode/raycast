@@ -67,7 +67,7 @@ type World struct {
 }
 
 func NewWorld() *World {
-	l := LoadLevel("dungeon.json")
+	l := LoadLevel("library.json")
 
 	w := &World{
 		soundPlayer: NewSoundPlayer(),
@@ -246,5 +246,7 @@ func (w *World) CreateEntity(name string, pos vector) {
 		w.pickups = append(w.pickups, NewPickup(healthPickupType, 1, pos))
 	case "ammo":
 		w.pickups = append(w.pickups, NewPickup(ammoPickupType, 5, pos))
+	case "end":
+		w.portals = append(w.portals, NewPortal(pos))
 	}
 }

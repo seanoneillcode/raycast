@@ -2,10 +2,7 @@ package raycast
 
 type enemy struct {
 	entity            *entity
-	hurtTime          float64
-	dyingTime         float64
 	currentHurtTime   float64
-	attackTime        float64
 	currentAttackTime float64
 	state             string
 	canSeePlayer      bool
@@ -17,15 +14,14 @@ type enemy struct {
 type EnemyType string
 
 const (
-	blueEnemyType = "blue-enemy"
-	ballEnemyType = "ball-enemy"
+	blueEnemyType  = "blue-enemy"
+	ballEnemyType  = "ball-enemy"
+	alienEnemyType = "alien-enemy"
+	blobEnemyType  = "blob-enemy"
 )
 
 func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 	e := &enemy{
-		hurtTime:    0.6 * 1000,
-		dyingTime:   0.4 * 1000,
-		attackTime:  0.6 * 1000,
 		enemyType:   enemyType,
 		attackRange: 1.0,
 		state:       "move",
@@ -56,9 +52,35 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 				autoplay:  true,
 			}),
 		)
-		e.attackTime = 0.8 * 1000
 		ent.speed = 0.003
 		ent.dropItem = "soul"
+		break
+	case blobEnemyType:
+		ent = NewEntity(
+			pos,
+			NewAnimatedSprite("blob-walk", &animation{
+				numFrames: 2,
+				numTime:   0.2 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("blob-hurt", &animation{
+				numFrames: 2,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("blob-attack", &animation{
+				numFrames: 2,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("blob-die", &animation{
+				numFrames: 4,
+				numTime:   0.2 * 1000,
+				autoplay:  true,
+			}),
+		)
+		ent.speed = 0.003
+		ent.dropItem = ""
 		break
 	case blueEnemyType:
 		e.attackRange = 8 * 8 // distance needs to be squared
@@ -82,15 +104,42 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			}),
 			NewAnimatedSprite("enemy-blue-die", &animation{
 				numFrames: 4,
-				numTime:   0.1 * 1000,
+				numTime:   0.2 * 1000,
 				autoplay:  true,
 			}),
 		)
-		e.attackTime = 1.0 * 1000
 		ent.speed = 0.001
 		ent.dropItem = "soul"
-		break
+	case alienEnemyType:
+		e.attackRange = 8 * 8 // distance needs to be squared
+
+		ent = NewEntity(
+			pos,
+			NewAnimatedSprite("alien-walk", &animation{
+				numFrames: 2,
+				numTime:   0.2 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("alien-hurt", &animation{
+				numFrames: 4,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("alien-attack", &animation{
+				numFrames: 4,
+				numTime:   0.15 * 1000,
+				autoplay:  true,
+			}),
+			NewAnimatedSprite("alien-die", &animation{
+				numFrames: 4,
+				numTime:   0.2 * 1000,
+				autoplay:  true,
+			}),
+		)
+		ent.speed = 0.001
+		ent.dropItem = "soul"
 	}
+
 	e.entity = ent
 
 	return e
@@ -101,8 +150,9 @@ func (r *enemy) Update(w *World, delta float64) {
 	if r.entity.health < 0 && r.state != "dying" {
 		w.soundPlayer.PlaySound("enemy-die")
 		r.state = "dying"
-		r.currentHurtTime = r.dyingTime
 		r.entity.SetCurrentSprite(3)
+		anim := r.entity.CurrentSprite().animation
+		r.currentHurtTime = anim.numTime * float64(anim.numFrames)
 		if r.entity.dropItem != "" {
 			w.CreateEntity(r.entity.dropItem, r.entity.pos)
 		}
@@ -114,7 +164,6 @@ func (r *enemy) Update(w *World, delta float64) {
 		if r.currentHurtTime > 0 {
 			r.currentHurtTime -= delta
 		} else {
-
 			r.entity.SetCurrentSprite(0)
 			r.state = "move"
 			r.entity.state = NothingEntityState
@@ -124,12 +173,14 @@ func (r *enemy) Update(w *World, delta float64) {
 		if r.entity.CurrentSprite().distance != -1 && r.entity.CurrentSprite().distance < r.attackRange {
 			r.entity.SetCurrentSprite(2)
 			r.state = "attack"
-			r.currentAttackTime = r.attackTime
+			anim := r.entity.CurrentSprite().animation
+			r.currentAttackTime = anim.numTime * float64(anim.numFrames)
 		}
 		break
 	case "attack":
 		switch r.enemyType {
 		case ballEnemyType:
+		case blobEnemyType:
 			if r.currentAttackTime > 0 {
 				r.currentAttackTime -= delta
 			} else {
@@ -142,6 +193,8 @@ func (r *enemy) Update(w *World, delta float64) {
 			}
 			break
 		case blueEnemyType:
+		case alienEnemyType:
+			r.entity.state = StoppedEntityState
 			if r.currentAttackTime > 0 {
 				r.currentAttackTime -= delta
 			} else {
@@ -155,6 +208,7 @@ func (r *enemy) Update(w *World, delta float64) {
 				}
 				r.entity.SetCurrentSprite(0)
 				r.state = "move"
+				r.entity.state = NothingEntityState
 			}
 			break
 		}
@@ -164,6 +218,9 @@ func (r *enemy) Update(w *World, delta float64) {
 		r.entity.state = StunnedEntityState
 		if r.currentHurtTime > 0 {
 			r.currentHurtTime -= delta
+			if r.currentHurtTime < 0 {
+				r.entity.state = DeadEntityState
+			}
 		} else {
 			r.entity.state = DeadEntityState
 		}
@@ -201,8 +258,9 @@ func (r *enemy) TakeDamage(w *World, amount int) {
 		return
 	}
 	r.entity.health -= amount
-	r.currentHurtTime = r.hurtTime
 	r.entity.SetCurrentSprite(1)
+	anim := r.entity.CurrentSprite().animation
+	r.currentHurtTime = anim.numTime * float64(anim.numFrames)
 	r.state = "hurt"
 	w.soundPlayer.PlaySound("chunk")
 }
