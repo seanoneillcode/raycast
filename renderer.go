@@ -26,40 +26,8 @@ func NewRenderer() *Renderer {
 	return &Renderer{
 		background: ebiten.NewImageFromImage(LoadImage("background.png")),
 		image:      ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
-		textures: map[string]image.Image{
-			"wall-1":            LoadImage("wall-1.png"),
-			"wall-2":            LoadImage("wall-2.png"),
-			"wall-3":            LoadImage("wall-3.png"),
-			"wall-4":            LoadImage("wall-4.png"),
-			"floor":             LoadImage("floor-1.png"),
-			"ceiling":           LoadImage("ceiling.png"),
-			"eye":               LoadImage("sprite.png"),
-			"bullet":            LoadImage("bullet.png"),
-			"door":              LoadImage("door.png"),
-			"door-floor":        LoadImage("door-floor.png"),
-			"door-wall":         LoadImage("door-wall.png"),
-			"soul":              LoadImage("soul.png"),
-			"ammo":              LoadImage("ammo.png"),
-			"ammo-icon":         LoadImage("ammo-icon.png"),
-			"health":            LoadImage("health.png"),
-			"health-icon":       LoadImage("health-icon.png"),
-			"bullet-hit":        LoadImage("bullet-hit.png"),
-			"portal":            LoadImage("portal.png"),
-			"weapon-staff":      LoadImage("weapon-staff.png"),
-			"enemy-ball-move":   LoadImage("enemy-ball-move.png"),
-			"enemy-ball-hurt":   LoadImage("enemy-ball-hurt.png"),
-			"enemy-ball-attack": LoadImage("enemy-ball-attack.png"),
-			"enemy-ball-die":    LoadImage("enemy-ball-die.png"),
-			"enemy-blue-move":   LoadImage("enemy-blue-move.png"),
-			"enemy-blue-hurt":   LoadImage("enemy-blue-hurt.png"),
-			"enemy-blue-attack": LoadImage("enemy-blue-attack.png"),
-			"enemy-blue-die":    LoadImage("enemy-blue-die.png"),
-			"candlestick":       LoadImage("candlestick.png"),
-			"grey-hit-effect":   LoadImage("grey-hit-effect.png"),
-			"explosion":         LoadImage("explosion.png"),
-			"book":              LoadImage("book.png"),
-		},
-		zbuffer: make([]float64, ScreenWidth),
+		textures:   map[string]image.Image{},
+		zbuffer:    make([]float64, ScreenWidth),
 	}
 }
 
@@ -122,7 +90,7 @@ func (r *Renderer) drawWeapon(w *World) {
 		x: 192 - 64,
 		y: 192 - 64,
 	}
-	img := r.textures["weapon-staff"]
+	img := r.GetTexture("weapon-staff")
 	r.drawScaledImage(pos, img, w.player.weaponAnimation.currentFrame, TextureWidth*2, 2)
 }
 
@@ -131,14 +99,14 @@ func (r *Renderer) drawHud(w *World) {
 		x: 24,
 		y: 8,
 	}
-	ammoIcon := r.textures["ammo-icon"]
+	ammoIcon := r.GetTexture("ammo-icon")
 	r.drawScaledImage(ammoPos, ammoIcon, 0, TextureWidth, 1)
 
 	healthPos := vector{
 		x: 256 - 32 - 8,
 		y: 8,
 	}
-	healthIcon := r.textures["health-icon"]
+	healthIcon := r.GetTexture("health-icon")
 	r.drawScaledImage(healthPos, healthIcon, 0, TextureWidth, 1)
 
 	RenderText(r.image, fmt.Sprintf("%d", w.player.ammo), int(ammoPos.x+8), 7)
@@ -250,7 +218,7 @@ func (r *Renderer) drawSprites(w *World) {
 					d := (y-vMoveScreen)*256 - ScreenHeight*128 + spriteHeight*128 //256 and 128 factors to avoid floats
 					texY := ((d * TextureHeight) / spriteHeight) / 256
 
-					img := r.textures[s.image]
+					img := r.GetTexture(s.image)
 					frameOffsetX := 0
 					if s.animation != nil {
 						frameOffsetX = s.animation.currentFrame * TextureWidth
@@ -290,7 +258,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	if ray.texture != "" {
 		texture = ray.texture
 	}
-	img := r.textures[texture]
+	img := r.GetTexture(texture)
 	if img == nil {
 		fmt.Println("sadfa")
 	}
@@ -412,7 +380,7 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 			floorY += floorStepY
 
 			if floorTex != "" {
-				img := r.textures[floorTex]
+				img := r.GetTexture(floorTex)
 				c := img.At(tx, ty)
 
 				rgba := color.RGBAModel.Convert(c).(color.RGBA)
@@ -420,7 +388,7 @@ func (r *Renderer) drawFloorAndCeiling(w *World) {
 				r.SetPixel(float64(x), float64(y), rgba)
 			}
 			if ceilingTex != "" {
-				img := r.textures[ceilingTex]
+				img := r.GetTexture(ceilingTex)
 				c := img.At(tx, ty)
 				rgba := color.RGBAModel.Convert(c).(color.RGBA)
 				rgba = fakeLight(rgba, rowDistance)
@@ -485,4 +453,13 @@ func (r *Renderer) drawChunkyPixel(x float64, y float64, c color.RGBA) {
 	r.SetPixel(x+1, y, c)
 	r.SetPixel(x, y+1, c)
 	r.SetPixel(x+1, y+1, c)
+}
+
+func (r *Renderer) GetTexture(name string) image.Image {
+	t, ok := r.textures[name]
+	if !ok {
+		t = LoadImage(name + ".png")
+		r.textures[name] = t
+	}
+	return t
 }
