@@ -111,6 +111,34 @@
                 }]
         }, 
         {
+         "id":30,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-1"
+                }]
+        }, 
+        {
+         "id":31,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-2"
+                }]
+        }, 
+        {
          "id":32,
          "properties":[
                 {
@@ -119,19 +147,9 @@
                  "value":true
                 }, 
                 {
-                 "name":"door",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
-                 "name":"north",
-                 "type":"bool",
-                 "value":false
-                }, 
-                {
                  "name":"wallTex",
                  "type":"string",
-                 "value":"wall"
+                 "value":"wall-3"
                 }]
         }, 
         {
@@ -145,7 +163,91 @@
                 {
                  "name":"wallTex",
                  "type":"string",
-                 "value":"wall"
+                 "value":"wall-4"
+                }]
+        }, 
+        {
+         "id":34,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-5"
+                }]
+        }, 
+        {
+         "id":35,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-6"
+                }]
+        }, 
+        {
+         "id":36,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-7"
+                }]
+        }, 
+        {
+         "id":37,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-8"
+                }]
+        }, 
+        {
+         "id":38,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-9"
+                }]
+        }, 
+        {
+         "id":39,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-10"
                 }]
         }, 
         {

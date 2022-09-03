@@ -27,7 +27,10 @@ func NewRenderer() *Renderer {
 		background: ebiten.NewImageFromImage(LoadImage("background.png")),
 		image:      ebiten.NewImageFromImage(image.NewRGBA(image.Rect(0, 0, ScreenWidth, ScreenHeight))),
 		textures: map[string]image.Image{
-			"wall":              LoadImage("wall-2.png"),
+			"wall-1":            LoadImage("wall-1.png"),
+			"wall-2":            LoadImage("wall-2.png"),
+			"wall-3":            LoadImage("wall-3.png"),
+			"wall-4":            LoadImage("wall-4.png"),
 			"floor":             LoadImage("floor-1.png"),
 			"ceiling":           LoadImage("ceiling.png"),
 			"eye":               LoadImage("sprite.png"),
@@ -54,7 +57,7 @@ func NewRenderer() *Renderer {
 			"candlestick":       LoadImage("candlestick.png"),
 			"grey-hit-effect":   LoadImage("grey-hit-effect.png"),
 			"explosion":         LoadImage("explosion.png"),
-			"crystal":           LoadImage("crystal.png"),
+			"book":              LoadImage("book.png"),
 		},
 		zbuffer: make([]float64, ScreenWidth),
 	}
@@ -283,7 +286,7 @@ func (r *Renderer) drawRay(ray ray, index int) {
 	if ray.side == 1 && ray.dir.y < 0 {
 		texX = TextureWidth - texX - 1
 	}
-	texture := "wall"
+	texture := "wall-3"
 	if ray.texture != "" {
 		texture = ray.texture
 	}

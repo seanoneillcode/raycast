@@ -7,10 +7,10 @@ import (
 type pickupType string
 
 const (
-	ammoPickupType    pickupType = "ammo"
-	healthPickupType  pickupType = "health"
-	soulPickupType    pickupType = "soul"
-	crystalPickupType pickupType = "crystal"
+	ammoPickupType   pickupType = "ammo"
+	healthPickupType pickupType = "health"
+	soulPickupType   pickupType = "soul"
+	bookPickupType   pickupType = "book"
 )
 
 type pickup struct {
@@ -35,12 +35,8 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 			autoplay:  true,
 		})
 		break
-	case crystalPickupType:
-		s = NewAnimatedSprite("book", &animation{
-			numFrames: 4,
-			numTime:   0.4 * 1000,
-			autoplay:  true,
-		})
+	case bookPickupType:
+		s = NewSprite("book")
 		break
 	}
 	p := &pickup{
@@ -89,7 +85,7 @@ func handleGettingPickedUp(w *World, p *pickup) {
 		w.player.screenFlashColor = soulPickupScreenFlashColor
 		w.soundPlayer.PlaySound("pickup-soul")
 		break
-	case crystalPickupType:
+	case bookPickupType:
 		w.player.souls += p.amount
 		w.player.screenFlashTimer = screenFlashTime
 		w.player.screenFlashColor = soulPickupScreenFlashColor
