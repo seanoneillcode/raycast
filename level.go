@@ -87,7 +87,7 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 			if obj.Name == "barrel" {
 				s := NewSprite("barrel")
 				s.height = 0.5
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "ammo"))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", ""))
 			}
 			break
 		case "enemy":

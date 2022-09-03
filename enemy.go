@@ -56,6 +56,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 				autoplay:  true,
 			}),
 		)
+		e.attackTime = 0.8 * 1000
 		ent.speed = 0.003
 		ent.dropItem = "soul"
 		break
@@ -85,6 +86,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 				autoplay:  true,
 			}),
 		)
+		e.attackTime = 1.0 * 1000
 		ent.speed = 0.001
 		ent.dropItem = "soul"
 		break
