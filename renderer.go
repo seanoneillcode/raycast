@@ -259,9 +259,6 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		texture = ray.texture
 	}
 	img := r.GetTexture(texture)
-	if img == nil {
-		fmt.Println("sadfa")
-	}
 
 	x := index
 	step := float64(TextureHeight) / float64(lineHeight)
@@ -276,9 +273,9 @@ func (r *Renderer) drawRay(ray ray, index int) {
 		rgba := color.RGBAModel.Convert(c).(color.RGBA)
 		rgba = fakeLight(rgba, ray.distance)
 		if ray.side == 0 {
-			rgba.R = rgba.R / 2
-			rgba.G = rgba.G / 2
-			rgba.B = rgba.B / 2
+			rgba.R = rgba.R - (rgba.R / 3)
+			rgba.G = rgba.G - (rgba.G / 3)
+			rgba.B = rgba.B - (rgba.B / 3)
 		}
 		c = rgba
 		r.SetPixel(float64(x), float64(y), c)

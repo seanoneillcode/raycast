@@ -31,6 +31,7 @@ type player struct {
 	screenFlashColor color.RGBA
 	screenFlashTimer float64
 	oldHealth        int
+	keys             int
 }
 
 func NewPlayer(pos vector) *player {
@@ -101,16 +102,7 @@ func (r *player) Update(w *World, delta float64) error {
 		}
 		t := w.getTileAtPoint(checkPos)
 		if t.door {
-			if t.block {
-				t.block = false
-				w.soundPlayer.PlaySound("door")
-			} else {
-				playerT := w.getTileAtPoint(r.pos)
-				if playerT != t {
-					t.block = true
-					w.soundPlayer.PlaySound("door")
-				}
-			}
+			tryToOpenDoor(w, r, t)
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyM) {
@@ -195,4 +187,25 @@ func (r *player) TakeDamage(amount int) {
 	r.health -= 1
 	r.screenFlashTimer = screenFlashTime
 	r.screenFlashColor = hurtScreenFlashColor
+}
+
+func tryToOpenDoor(w *World, r *player, t *tile) {
+	if t.block {
+		if t.locked {
+			if r.keys <= 0 {
+				w.soundPlayer.PlaySound("thud")
+				return
+			}
+			r.keys -= 1
+			//w.soundPlayer.PlaySound("door") // play click sound
+		}
+		t.block = false
+		w.soundPlayer.PlaySound("door")
+	} else {
+		playerT := w.getTileAtPoint(r.pos)
+		if playerT != t {
+			t.block = true
+			w.soundPlayer.PlaySound("door")
+		}
+	}
 }

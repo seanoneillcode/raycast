@@ -33,6 +33,7 @@ func loadTiles(grid *tiledgrid.TiledGrid) [][]*tile {
 				wallTex:    td.WallTex,
 				doorTex:    td.DoorTex,
 				ceilingTex: td.CeilingTex,
+				locked:     td.Locked,
 			}
 		}
 		tilesRow[ix] = tilesColumn
@@ -121,6 +122,9 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 			}
 			if obj.Name == "book" {
 				objData.pickups = append(objData.pickups, NewPickup(bookPickupType, 1, pos))
+			}
+			if obj.Name == "key" {
+				objData.pickups = append(objData.pickups, NewPickup(keyPickupType, 1, pos))
 			}
 			break
 		}

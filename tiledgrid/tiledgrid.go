@@ -156,6 +156,7 @@ type TileData struct {
 	FloorTex   string
 	DoorTex    string
 	CeilingTex string
+	Locked     bool
 }
 
 func (tg *TiledGrid) GetTileData(x int, y int) *TileData {
@@ -205,6 +206,9 @@ func (tg *TiledGrid) GetTileData(x int, y int) *TileData {
 				}
 				if prop.Name == "doorTex" && prop.Value != nil {
 					td.DoorTex = (prop.Value).(string)
+				}
+				if prop.Name == "locked" && prop.Value != nil {
+					td.Locked = (prop.Value).(bool)
 				}
 			}
 			break

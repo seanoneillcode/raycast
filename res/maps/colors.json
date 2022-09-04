@@ -49,6 +49,50 @@
                 }]
         }, 
         {
+         "id":1,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ceilingTex",
+                 "type":"string",
+                 "value":"door-floor"
+                }, 
+                {
+                 "name":"door",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"doorTex",
+                 "type":"string",
+                 "value":"door-locked"
+                }, 
+                {
+                 "name":"floorTex",
+                 "type":"string",
+                 "value":"door-floor"
+                }, 
+                {
+                 "name":"locked",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"north",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"door-wall-locked"
+                }]
+        }, 
+        {
          "id":10,
          "properties":[
                 {
@@ -80,6 +124,45 @@
                  "name":"wallTex",
                  "type":"string",
                  "value":"door-wall"
+                }]
+        }, 
+        {
+         "id":11,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"ceilingTex",
+                 "type":"string",
+                 "value":"door-floor"
+                }, 
+                {
+                 "name":"door",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"doorTex",
+                 "type":"string",
+                 "value":"door-locked"
+                }, 
+                {
+                 "name":"floorTex",
+                 "type":"string",
+                 "value":"door-floor"
+                }, 
+                {
+                 "name":"locked",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"door-wall-locked"
                 }]
         }, 
         {
@@ -149,7 +232,7 @@
                 {
                  "name":"wallTex",
                  "type":"string",
-                 "value":"wall-3"
+                 "value":"wall-cold"
                 }]
         }, 
         {
@@ -251,6 +334,34 @@
                 }]
         }, 
         {
+         "id":40,
+         "properties":[
+                {
+                 "name":"ceilingTex",
+                 "type":"string",
+                 "value":"ceiling"
+                }, 
+                {
+                 "name":"floorTex",
+                 "type":"string",
+                 "value":"floor-carpet"
+                }]
+        }, 
+        {
+         "id":42,
+         "properties":[
+                {
+                 "name":"ceilingTex",
+                 "type":"string",
+                 "value":"ceiling-olive"
+                }, 
+                {
+                 "name":"floorTex",
+                 "type":"string",
+                 "value":"floor-flagstone"
+                }]
+        }, 
+        {
          "id":43,
          "properties":[
                 {
@@ -271,6 +382,20 @@
                  "name":"floorTex",
                  "type":"string",
                  "value":"floor"
+                }]
+        }, 
+        {
+         "id":45,
+         "properties":[
+                {
+                 "name":"ceilingTex",
+                 "type":"string",
+                 "value":"ceiling-olive"
+                }, 
+                {
+                 "name":"floorTex",
+                 "type":"string",
+                 "value":"floor-tiles"
                 }]
         }],
  "tilewidth":16,

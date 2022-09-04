@@ -11,6 +11,7 @@ const (
 	healthPickupType pickupType = "health"
 	soulPickupType   pickupType = "soul"
 	bookPickupType   pickupType = "book"
+	keyPickupType    pickupType = "key"
 )
 
 type pickup struct {
@@ -27,6 +28,13 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 		break
 	case healthPickupType:
 		s = NewSprite("health")
+		break
+	case keyPickupType:
+		s = NewAnimatedSprite("key", &animation{
+			numFrames: 4,
+			numTime:   0.2 * 1000,
+			autoplay:  true,
+		})
 		break
 	case soulPickupType:
 		s = NewAnimatedSprite("soul", &animation{
@@ -83,6 +91,12 @@ func handleGettingPickedUp(w *World, p *pickup) {
 		w.player.souls += p.amount
 		w.player.screenFlashTimer = screenFlashTime
 		w.player.screenFlashColor = soulPickupScreenFlashColor
+		w.soundPlayer.PlaySound("pickup-soul")
+		break
+	case keyPickupType:
+		w.player.keys += 1
+		w.player.screenFlashTimer = screenFlashTime
+		w.player.screenFlashColor = keyPickupScreenFlashColor
 		w.soundPlayer.PlaySound("pickup-soul")
 		break
 	case bookPickupType:

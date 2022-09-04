@@ -80,7 +80,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			}),
 		)
 		ent.speed = 0.0015
-		ent.health = 3
+		ent.health = 2
 		ent.dropItem = ""
 		break
 	case blueEnemyType:

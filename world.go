@@ -50,6 +50,7 @@ type tile struct {
 	doorTex    string
 	ceilingTex string
 	seen       bool
+	locked     bool
 }
 
 type World struct {

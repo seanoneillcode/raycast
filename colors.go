@@ -55,6 +55,13 @@ var soulPickupScreenFlashColor = color.RGBA{
 	A: 1,
 }
 
+var keyPickupScreenFlashColor = color.RGBA{
+	R: 245,
+	G: 227,
+	B: 66,
+	A: 1,
+}
+
 var unseenColor = color.RGBA{
 	R: 60,
 	G: 60,
