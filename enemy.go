@@ -79,7 +79,8 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 				autoplay:  true,
 			}),
 		)
-		ent.speed = 0.003
+		ent.speed = 0.0015
+		ent.health = 3
 		ent.dropItem = ""
 		break
 	case blueEnemyType:
@@ -137,6 +138,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			}),
 		)
 		ent.speed = 0.001
+		ent.health = 2
 		ent.dropItem = "soul"
 	}
 
