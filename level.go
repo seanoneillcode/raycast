@@ -100,6 +100,10 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 				s := NewSprite("bush")
 				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", ""))
 			}
+			if obj.Name == "web" {
+				s := NewSprite("web")
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", ""))
+			}
 			break
 		case "enemy":
 			if obj.Name == "ball" {
