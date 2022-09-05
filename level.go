@@ -44,6 +44,7 @@ func loadTiles(grid *tiledgrid.TiledGrid) [][]*tile {
 
 type objectData struct {
 	startPos vector
+	startDir string
 	enemies  []*enemy
 	pickups  []*pickup
 	scenery  []*scenery
@@ -71,6 +72,7 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 		case "level":
 			if obj.Name == "start" {
 				objData.startPos = pos
+				objData.startDir = getStringProperty("dir", obj)
 			}
 			if obj.Name == "end" {
 				objData.portals = append(objData.portals, NewPortal(pos))
@@ -140,4 +142,13 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 		//}
 	}
 	return objData
+}
+
+func getStringProperty(name string, obj *tiledgrid.ObjectData) string {
+	for _, p := range obj.Properties {
+		if p.Name == name {
+			return (p.Value).(string)
+		}
+	}
+	return ""
 }

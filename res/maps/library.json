@@ -23,6 +23,12 @@
                  "height":16,
                  "id":1,
                  "name":"start",
+                 "properties":[
+                        {
+                         "name":"dir",
+                         "type":"string",
+                         "value":"south"
+                        }],
                  "rotation":0,
                  "type":"level",
                  "visible":true,

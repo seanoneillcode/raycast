@@ -75,7 +75,7 @@ func NewWorld() *World {
 		tiles:       l.tiles,
 		width:       l.width,
 		height:      l.height,
-		player:      NewPlayer(l.objectData.startPos),
+		player:      NewPlayer(l.objectData.startPos, l.objectData.startDir),
 		enemies:     l.objectData.enemies,
 		pickups:     l.objectData.pickups,
 		scenery:     l.objectData.scenery,

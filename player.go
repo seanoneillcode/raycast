@@ -34,8 +34,8 @@ type player struct {
 	keys             int
 }
 
-func NewPlayer(pos vector) *player {
-	return &player{
+func NewPlayer(pos vector, dir string) *player {
+	p := &player{
 		dir: vector{
 			x: 1,
 			y: 0,
@@ -61,6 +61,62 @@ func NewPlayer(pos vector) *player {
 		},
 		showMiniMap: false,
 	}
+	switch dir {
+	case "north":
+		p.dir = vector{
+			x: 0,
+			y: -1,
+		}
+		p.strafeDir = vector{
+			x: 1,
+			y: 0,
+		}
+		p.plane = vector{
+			x: 0.5,
+			y: 0,
+		}
+	case "south":
+		p.dir = vector{
+			x: 0,
+			y: 1,
+		}
+		p.strafeDir = vector{
+			x: -1,
+			y: 0,
+		}
+		p.plane = vector{
+			x: -0.5,
+			y: 0,
+		}
+	case "east":
+		p.dir = vector{
+			x: 1,
+			y: 0,
+		}
+		p.strafeDir = vector{
+			x: 0,
+			y: 1,
+		}
+		p.plane = vector{
+			x: 0,
+			y: 0.5,
+		}
+	case "west":
+		p.dir = vector{
+			x: -1,
+			y: 0,
+		}
+		p.strafeDir = vector{
+			x: 0,
+			y: -1,
+		}
+		p.plane = vector{
+			x: 0,
+			y: -0.5,
+		}
+	}
+
+	return p
 }
 
 func (r *player) Update(w *World, delta float64) error {
