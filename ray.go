@@ -160,6 +160,9 @@ func calculateRay(w *World, cameraX float64) ray {
 }
 
 func canSeePos(w *World, startPos vector, targetPos vector) bool {
+	if w.debug.passiveMode {
+		return false
+	}
 	rayStart := startPos
 	targetMapPos := mapPos{
 		x: int(targetPos.x),

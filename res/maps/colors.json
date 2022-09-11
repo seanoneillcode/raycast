@@ -339,7 +339,7 @@
                 {
                  "name":"ceilingTex",
                  "type":"string",
-                 "value":"ceiling"
+                 "value":"ceiling-olive"
                 }, 
                 {
                  "name":"floorTex",
@@ -353,7 +353,7 @@
                 {
                  "name":"ceilingTex",
                  "type":"string",
-                 "value":"ceiling-olive"
+                 "value":"ceiling-stone"
                 }, 
                 {
                  "name":"floorTex",

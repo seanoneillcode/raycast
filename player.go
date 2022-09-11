@@ -167,6 +167,9 @@ func (r *player) Update(w *World, delta float64) error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyL) {
 		fakeLightEnabled = !fakeLightEnabled
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+		w.debug.passiveMode = !w.debug.passiveMode
+	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyK) {
 		screenFlashEnabled = !screenFlashEnabled
 	}

@@ -65,6 +65,11 @@ type World struct {
 	portals     []*portal
 	player      *player
 	soundPlayer *SoundPlayer
+	debug       *debug
+}
+
+type debug struct {
+	passiveMode bool
 }
 
 func NewWorld() *World {
@@ -83,6 +88,7 @@ func NewWorld() *World {
 		// temp state
 		bullets: []*bullet{},
 		effects: []*effect{},
+		debug:   &debug{},
 	}
 	w.soundPlayer.LoadSound("pickup-health")
 	w.soundPlayer.LoadSound("pickup-ammo")
