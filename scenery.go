@@ -1,16 +1,18 @@
 package raycast
 
 type scenery struct {
-	entity *entity
-	effect effectType
-	sound  string
+	entity     *entity
+	effect     effectType
+	sound      string
+	canCollide bool
 }
 
-func NewScenery(sprite *sprite, pos vector, effect effectType, sound string, dropItem string, isPhysicsEntity bool) *scenery {
+func NewScenery(sprite *sprite, pos vector, effect effectType, sound string, dropItem string, isPhysicsEntity bool, isCollide bool) *scenery {
 	p := &scenery{
-		entity: NewEntity(pos, sprite),
-		effect: effect,
-		sound:  sound,
+		entity:     NewEntity(pos, sprite),
+		effect:     effect,
+		sound:      sound,
+		canCollide: isCollide,
 	}
 	p.entity.isPhysicsEntity = isPhysicsEntity
 	if dropItem != "" {

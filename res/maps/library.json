@@ -429,8 +429,8 @@
                  "type":"enemy",
                  "visible":true,
                  "width":16,
-                 "x":352,
-                 "y":96
+                 "x":400,
+                 "y":80
                 }, 
                 {
                  "height":16,
@@ -541,6 +541,105 @@
                  "width":16,
                  "x":464,
                  "y":176
+                }, 
+                {
+                 "height":16,
+                 "id":112,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":256,
+                 "y":176
+                }, 
+                {
+                 "height":16,
+                 "id":113,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":208,
+                 "y":224
+                }, 
+                {
+                 "height":16,
+                 "id":115,
+                 "name":"candlebra",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":256,
+                 "y":352
+                }, 
+                {
+                 "height":16,
+                 "id":116,
+                 "name":"candlebra",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":208,
+                 "y":400
+                }, 
+                {
+                 "height":16,
+                 "id":117,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":352,
+                 "y":208
+                }, 
+                {
+                 "height":16,
+                 "id":118,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":448,
+                 "y":208
+                }, 
+                {
+                 "height":16,
+                 "id":119,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":448,
+                 "y":320
+                }, 
+                {
+                 "height":16,
+                 "id":120,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":48,
+                 "y":208
+                }, 
+                {
+                 "height":16,
+                 "id":121,
+                 "name":"lamp",
+                 "rotation":0,
+                 "type":"scenery",
+                 "visible":true,
+                 "width":16,
+                 "x":128,
+                 "y":208
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -549,7 +648,7 @@
          "y":0
         }],
  "nextlayerid":3,
- "nextobjectid":109,
+ "nextobjectid":122,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.5.0",

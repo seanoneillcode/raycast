@@ -33,7 +33,7 @@ func (r *bullet) Update(w *World, delta float64) {
 		}
 	}
 	for _, e := range w.scenery {
-		if collides(r.entity, e.entity) {
+		if e.canCollide && collides(r.entity, e.entity) {
 			r.entity.state = DeadEntityState
 			r.entity.undoLastMove(delta)
 			w.AddEffect(bulletHitEffectType, r.entity.pos)

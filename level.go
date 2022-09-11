@@ -85,24 +85,36 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 					numTime:   0.2 * 1000,
 					isLoop:    true,
 				})
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", true))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", true, true))
 			}
 			if obj.Name == "barrel" {
 				s := NewSprite("barrel")
 				s.height = 0.5
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "", true))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "", true, true))
 			}
 			if obj.Name == "tree" {
 				s := NewSprite("tree")
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", "", false))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", "", false, true))
 			}
 			if obj.Name == "bush" {
 				s := NewSprite("bush")
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", "", false))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", "", false, true))
 			}
 			if obj.Name == "web" {
 				s := NewSprite("web")
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", false))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", false, false))
+			}
+			if obj.Name == "lamp" {
+				s := NewAnimatedSprite("lamp", &animation{
+					numFrames: 4,
+					numTime:   0.2 * 1000,
+					isLoop:    true,
+				})
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "crack", "", false, false))
+			}
+			if obj.Name == "candlebra" {
+				s := NewSprite("candlebra")
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "crack", "", false, false))
 			}
 			break
 		case "enemy":
