@@ -143,12 +143,13 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 	}
 
 	e.entity = ent
+	e.entity.isPhysicsEntity = true
 
 	return e
 }
 
 func (r *enemy) Update(w *World, delta float64) {
-	r.entity.Update(delta)
+	r.entity.Update(delta, w)
 	if r.entity.health < 0 && r.state != "dying" {
 		w.soundPlayer.PlaySound("enemy-die")
 		r.state = "dying"
@@ -200,7 +201,8 @@ func (r *enemy) Update(w *World, delta float64) {
 			if r.currentAttackTime > 0 {
 				r.currentAttackTime -= delta
 			} else {
-				if canSeePos(w, r.entity.pos, w.player.pos) {
+				canSee, _ := canSeePos(w, r.entity.pos, w.player.pos)
+				if canSee {
 					bulletDir := normalizeVector(vector{
 						x: w.player.pos.x - r.entity.pos.x,
 						y: w.player.pos.y - r.entity.pos.y,
@@ -230,7 +232,8 @@ func (r *enemy) Update(w *World, delta float64) {
 	}
 
 	if r.canSeePlayer {
-		if !canSeePos(w, r.entity.pos, w.player.pos) {
+		canSee, _ := canSeePos(w, r.entity.pos, w.player.pos)
+		if !canSee {
 			r.canSeePlayer = false
 			r.entity.dir = normalizeVector(vector{
 				x: r.lastKnowPlayerPos.x - r.entity.pos.x,
@@ -249,7 +252,8 @@ func (r *enemy) Update(w *World, delta float64) {
 			r.entity.dir.x = 0
 			r.entity.dir.y = 0
 		}
-		if canSeePos(w, r.entity.pos, w.player.pos) {
+		canSee, _ := canSeePos(w, r.entity.pos, w.player.pos)
+		if canSee {
 			r.canSeePlayer = true
 		}
 	}

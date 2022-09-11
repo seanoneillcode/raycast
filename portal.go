@@ -22,7 +22,7 @@ func NewPortal(pos vector) *portal {
 }
 
 func (r *portal) Update(w *World, delta float64) {
-	r.entity.Update(delta)
+	r.entity.Update(delta, w)
 	withinX := math.Abs(w.player.pos.x-r.entity.pos.x) < ((w.player.width + r.entity.width) / 2)
 	withinY := math.Abs(w.player.pos.y-r.entity.pos.y) < ((w.player.width + r.entity.width) / 2)
 	if withinX && withinY {

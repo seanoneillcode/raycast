@@ -15,7 +15,7 @@ func NewBullet(pos vector, dir vector, speed float64) *bullet {
 }
 
 func (r *bullet) Update(w *World, delta float64) {
-	r.entity.Update(delta)
+	r.entity.Update(delta, w)
 	t := w.getTileAtPoint(r.entity.pos)
 	if t.block {
 		r.entity.state = DeadEntityState

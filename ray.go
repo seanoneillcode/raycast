@@ -159,9 +159,9 @@ func calculateRay(w *World, cameraX float64) ray {
 	}
 }
 
-func canSeePos(w *World, startPos vector, targetPos vector) bool {
+func canSeePos(w *World, startPos vector, targetPos vector) (bool, float64) {
 	if w.debug.passiveMode {
-		return false
+		return false, 0
 	}
 	rayStart := startPos
 	targetMapPos := mapPos{
@@ -227,13 +227,13 @@ func canSeePos(w *World, startPos vector, targetPos vector) bool {
 		t := w.getTile(rayMapPos.x, rayMapPos.y)
 		if t != nil {
 			if t.block {
-				return false
+				return false, 0
 			}
 		}
 		if rayMapPos.x == targetMapPos.x && rayMapPos.y == targetMapPos.y {
-			return true
+			return true, distance
 		}
 	}
 
-	return false
+	return false, 0
 }

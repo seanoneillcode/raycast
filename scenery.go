@@ -6,12 +6,13 @@ type scenery struct {
 	sound  string
 }
 
-func NewScenery(sprite *sprite, pos vector, effect effectType, sound string, dropItem string) *scenery {
+func NewScenery(sprite *sprite, pos vector, effect effectType, sound string, dropItem string, isPhysicsEntity bool) *scenery {
 	p := &scenery{
 		entity: NewEntity(pos, sprite),
 		effect: effect,
 		sound:  sound,
 	}
+	p.entity.isPhysicsEntity = isPhysicsEntity
 	if dropItem != "" {
 		p.entity.dropItem = dropItem
 	}
@@ -19,8 +20,8 @@ func NewScenery(sprite *sprite, pos vector, effect effectType, sound string, dro
 	return p
 }
 
-func (r *scenery) Update(delta float64) {
-	r.entity.Update(delta)
+func (r *scenery) Update(delta float64, w *World) {
+	r.entity.Update(delta, w)
 }
 
 func (r *scenery) TakeDamage(w *World, amount int) {

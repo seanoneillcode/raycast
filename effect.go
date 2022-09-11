@@ -45,8 +45,8 @@ func NewEffect(effectType effectType, pos vector) *effect {
 	return e
 }
 
-func (r *effect) Update(delta float64) {
-	r.entity.Update(delta)
+func (r *effect) Update(delta float64, w *World) {
+	r.entity.Update(delta, w)
 	if r.timer > 0 {
 		r.timer -= delta
 		if r.timer <= 0 {

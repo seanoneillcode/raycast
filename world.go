@@ -8,6 +8,7 @@ const moveAmount = 0.002
 const rotateAmount = 0.0005
 const bulletSpeed = 0.01
 const bulletWidth = 0.01
+const explosionAccFactor = 3
 
 type vector struct {
 	x float64
@@ -141,7 +142,7 @@ func (w *World) Update(delta float64) error {
 
 	hasDead = false
 	for _, b := range w.scenery {
-		b.Update(delta)
+		b.Update(delta, w)
 		if b.entity.state == DeadEntityState {
 			hasDead = true
 		}
@@ -152,7 +153,7 @@ func (w *World) Update(delta float64) error {
 
 	hasDead = false
 	for _, b := range w.effects {
-		b.Update(delta)
+		b.Update(delta, w)
 		if b.entity.state == DeadEntityState {
 			hasDead = true
 		}
@@ -243,6 +244,34 @@ func (w *World) ShootBullet(pos vector, dir vector, speed float64) {
 
 func (w *World) AddEffect(effectType effectType, pos vector) {
 	w.effects = append(w.effects, NewEffect(effectType, pos))
+	if effectType == explosionEffectType {
+		// do an explosion
+		for _, s := range w.scenery {
+			applyExplosionAccelerationToEntity(w, s.entity, pos)
+		}
+		for _, s := range w.enemies {
+			applyExplosionAccelerationToEntity(w, s.entity, pos)
+		}
+	}
+}
+
+func applyExplosionAccelerationToEntity(w *World, ent *entity, sourcePos vector) {
+	if !ent.isPhysicsEntity {
+		return
+	}
+	canSee, distance := canSeePos(w, sourcePos, ent.pos)
+	if canSee {
+		dir := normalizeVector(vector{
+			x: ent.pos.x - sourcePos.x,
+			y: ent.pos.y - sourcePos.y,
+		})
+		acc := vector{
+			x: dir.x * (explosionAccFactor / distance),
+			y: dir.y * (explosionAccFactor / distance),
+		}
+		ent.physics = append(ent.physics, &acc)
+	}
+
 }
 
 func (w *World) CreateEntity(name string, pos vector) {

@@ -56,7 +56,7 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 }
 
 func (r *pickup) Update(w *World, delta float64) {
-	r.entity.Update(delta)
+	r.entity.Update(delta, w)
 	if r.entity.state != DeadEntityState {
 		withinX := math.Abs(w.player.pos.x-r.entity.pos.x) < ((w.player.width + r.entity.width) / 2)
 		withinY := math.Abs(w.player.pos.y-r.entity.pos.y) < ((w.player.width + r.entity.width) / 2)

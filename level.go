@@ -85,24 +85,24 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 					numTime:   0.2 * 1000,
 					autoplay:  true,
 				})
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", ""))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", true))
 			}
 			if obj.Name == "barrel" {
 				s := NewSprite("barrel")
 				s.height = 0.5
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", ""))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "enemy-die", "", true))
 			}
 			if obj.Name == "tree" {
 				s := NewSprite("tree")
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", ""))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", "", false))
 			}
 			if obj.Name == "bush" {
 				s := NewSprite("bush")
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", ""))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, explosionEffectType, "thud", "", false))
 			}
 			if obj.Name == "web" {
 				s := NewSprite("web")
-				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", ""))
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", false))
 			}
 			break
 		case "enemy":
