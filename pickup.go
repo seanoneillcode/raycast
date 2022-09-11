@@ -33,14 +33,14 @@ func NewPickup(t pickupType, amount int, pos vector) *pickup {
 		s = NewAnimatedSprite("key", &animation{
 			numFrames: 4,
 			numTime:   0.2 * 1000,
-			autoplay:  true,
+			isLoop:    true,
 		})
 		break
 	case soulPickupType:
 		s = NewAnimatedSprite("soul", &animation{
 			numFrames: 4,
 			numTime:   0.2 * 1000,
-			autoplay:  true,
+			isLoop:    true,
 		})
 		break
 	case bookPickupType:

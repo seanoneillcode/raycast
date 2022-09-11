@@ -57,7 +57,7 @@ func NewPlayer(pos vector, dir string) *player {
 		weaponAnimation: &animation{
 			numFrames: 4,
 			numTime:   0.1 * 1000,
-			autoplay:  false,
+			isReset:   true,
 		},
 		showMiniMap: false,
 	}

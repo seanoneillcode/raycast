@@ -17,6 +17,7 @@ func NewSprite(imageName string) *sprite {
 }
 
 func NewAnimatedSprite(imageName string, animation *animation) *sprite {
+	animation.Play()
 	return &sprite{
 		image:     imageName,
 		pos:       vector{},
@@ -30,12 +31,13 @@ type animation struct {
 	currentFrame int
 	numTime      float64
 	currentTime  float64
-	autoplay     bool
+	isLoop       bool
 	isPlaying    bool
+	isReset      bool
 }
 
 func (r *animation) Update(delta float64) {
-	if !r.autoplay && !r.isPlaying {
+	if !r.isPlaying {
 		return
 	}
 	if r.numFrames == 1 || r.numFrames == 0 {
@@ -46,8 +48,12 @@ func (r *animation) Update(delta float64) {
 		r.currentTime -= r.numTime
 		r.currentFrame += 1
 		if r.currentFrame == r.numFrames {
-			r.currentFrame = 0
-			if !r.autoplay {
+			if r.isLoop {
+				r.currentFrame = 0
+			} else {
+				if r.isReset {
+					r.currentFrame = 0
+				}
 				r.isPlaying = false
 			}
 		}
@@ -57,5 +63,7 @@ func (r *animation) Update(delta float64) {
 func (r *animation) Play() {
 	if !r.isPlaying {
 		r.isPlaying = true
+		r.currentFrame = 0
+		r.currentTime = 0
 	}
 }

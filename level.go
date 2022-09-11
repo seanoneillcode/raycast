@@ -83,7 +83,7 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 				s := NewAnimatedSprite("candlestick", &animation{
 					numFrames: 4,
 					numTime:   0.2 * 1000,
-					autoplay:  true,
+					isLoop:    true,
 				})
 				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", true))
 			}

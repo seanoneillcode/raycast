@@ -2,6 +2,7 @@ package raycast
 
 import (
 	"math"
+	"math/rand"
 )
 
 const moveAmount = 0.002
@@ -64,6 +65,7 @@ type World struct {
 	scenery     []*scenery
 	effects     []*effect
 	portals     []*portal
+	particles   []*particle
 	player      *player
 	soundPlayer *SoundPlayer
 	debug       *debug
@@ -87,9 +89,10 @@ func NewWorld() *World {
 		scenery:     l.objectData.scenery,
 		portals:     l.objectData.portals,
 		// temp state
-		bullets: []*bullet{},
-		effects: []*effect{},
-		debug:   &debug{},
+		bullets:   []*bullet{},
+		effects:   []*effect{},
+		particles: []*particle{},
+		debug:     &debug{},
 	}
 	w.soundPlayer.LoadSound("pickup-health")
 	w.soundPlayer.LoadSound("pickup-ammo")
@@ -162,6 +165,17 @@ func (w *World) Update(delta float64) error {
 		cleanDeadEffect(w)
 	}
 
+	hasDead = false
+	for _, b := range w.particles {
+		b.Update(delta, w)
+		if b.ttl < 0 {
+			hasDead = true
+		}
+	}
+	if hasDead {
+		cleanDeadParticle(w)
+	}
+
 	for _, b := range w.portals {
 		b.Update(w, delta)
 	}
@@ -192,6 +206,16 @@ func cleanDeadPickup(w *World) {
 		}
 	}
 	w.pickups = temp
+}
+
+func cleanDeadParticle(w *World) {
+	temp := w.particles[:0]
+	for _, b := range w.particles {
+		if b.ttl > 0 {
+			temp = append(temp, b)
+		}
+	}
+	w.particles = temp
 }
 
 func cleanDeadEffect(w *World) {
@@ -251,6 +275,28 @@ func (w *World) AddEffect(effectType effectType, pos vector) {
 		}
 		for _, s := range w.enemies {
 			applyExplosionAccelerationToEntity(w, s.entity, pos)
+		}
+	}
+}
+
+func (w *World) AddParticles(pType particleType, pos vector) {
+	switch pType {
+	case smokeParticleType:
+		for i := 0; i < 5; i++ {
+			acc := vector{
+				x: ((rand.Float64() * 2) - 1) * 3,
+				y: ((rand.Float64() * 2) - 1) * 3,
+			}
+			height := 0.5
+			heightAcc := (-rand.Float64() * 2) + 1.5
+			speed := rand.Float64() / 1000 * 4
+			ttl := 2 * 1000.0
+			s := NewAnimatedSprite("particle", &animation{
+				numFrames: 6,
+				numTime:   0.166 * 1000,
+				isPlaying: true,
+			})
+			w.particles = append(w.particles, NewParticle(pos, acc, height, heightAcc, speed, ttl, s))
 		}
 	}
 }

@@ -15,7 +15,7 @@ func NewPortal(pos vector) *portal {
 		entity: NewEntity(pos, NewAnimatedSprite("portal", &animation{
 			numFrames: 4,
 			numTime:   timing,
-			autoplay:  true,
+			isLoop:    true,
 		})),
 	}
 	return p

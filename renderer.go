@@ -153,6 +153,9 @@ func (r *Renderer) drawSprites(w *World) {
 	for _, b := range w.scenery {
 		sprites = append(sprites, b.entity.CurrentSprite())
 	}
+	for _, b := range w.particles {
+		sprites = append(sprites, b.sprite)
+	}
 
 	for _, s := range sprites {
 		s.distance = (w.player.pos.x-s.pos.x)*(w.player.pos.x-s.pos.x) + (w.player.pos.y-s.pos.y)*(w.player.pos.y-s.pos.y)

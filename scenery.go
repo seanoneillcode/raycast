@@ -29,6 +29,7 @@ func (r *scenery) TakeDamage(w *World, amount int) {
 	if r.entity.health < 0 {
 		r.entity.state = DeadEntityState
 		w.AddEffect(r.effect, r.entity.pos)
+		w.AddParticles(smokeParticleType, r.entity.pos)
 		w.soundPlayer.PlaySound(r.sound)
 		if r.entity.dropItem != "" {
 			w.CreateEntity(r.entity.dropItem, r.entity.pos)

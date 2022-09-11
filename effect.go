@@ -38,7 +38,7 @@ func NewEffect(effectType effectType, pos vector) *effect {
 		entity: NewEntity(pos, NewAnimatedSprite(img, &animation{
 			numFrames: numFrames,
 			numTime:   timing,
-			autoplay:  true,
+			isLoop:    true,
 		})),
 		timer: float64(numFrames) * timing,
 	}

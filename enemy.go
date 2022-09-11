@@ -34,22 +34,22 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			NewAnimatedSprite("enemy-ball-move", &animation{
 				numFrames: 4,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("enemy-ball-hurt", &animation{
 				numFrames: 4,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("enemy-ball-attack", &animation{
 				numFrames: 4,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("enemy-ball-die", &animation{
 				numFrames: 4,
 				numTime:   0.1 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 		)
 		ent.speed = 0.003
@@ -61,22 +61,22 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			NewAnimatedSprite("blob-walk", &animation{
 				numFrames: 2,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("blob-hurt", &animation{
 				numFrames: 2,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("blob-attack", &animation{
 				numFrames: 2,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("blob-die", &animation{
 				numFrames: 4,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 		)
 		ent.speed = 0.0015
@@ -91,22 +91,22 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			NewAnimatedSprite("enemy-blue-move", &animation{
 				numFrames: 4,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("enemy-blue-hurt", &animation{
 				numFrames: 4,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("enemy-blue-attack", &animation{
 				numFrames: 4,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("enemy-blue-die", &animation{
 				numFrames: 4,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 		)
 		ent.speed = 0.001
@@ -119,22 +119,22 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			NewAnimatedSprite("alien-walk", &animation{
 				numFrames: 2,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("alien-hurt", &animation{
 				numFrames: 4,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("alien-attack", &animation{
 				numFrames: 4,
 				numTime:   0.15 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 			NewAnimatedSprite("alien-die", &animation{
 				numFrames: 4,
 				numTime:   0.2 * 1000,
-				autoplay:  true,
+				isLoop:    true,
 			}),
 		)
 		ent.speed = 0.001
