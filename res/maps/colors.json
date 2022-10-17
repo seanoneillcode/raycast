@@ -121,6 +121,20 @@
                 }]
         }, 
         {
+         "id":8,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"fancy-rock-wall-broken"
+                }]
+        }, 
+        {
          "id":10,
          "properties":[
                 {
