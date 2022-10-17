@@ -26,7 +26,7 @@ type Game struct {
 
 func NewGame() *Game {
 	return &Game{
-		world:            NewWorld(),
+		//world:            NewWorld("stars-path.json"),
 		renderer:         NewRenderer(),
 		lastUpdateCalled: time.Now(),
 	}
@@ -50,4 +50,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return ScreenWidth, ScreenHeight
+}
+
+func (g *Game) LoadLevel(level string) {
+	g.world = NewWorld(level)
+	g.renderer.LoadAllLevelTextures(g.world)
 }

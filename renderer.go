@@ -463,3 +463,45 @@ func (r *Renderer) GetTexture(name string) image.Image {
 	}
 	return t
 }
+
+func (r *Renderer) cacheTexture(name string) {
+	tex, ok := r.textures[name]
+	if !ok {
+		tex = LoadImage(name + ".png")
+		r.textures[name] = tex
+	}
+}
+
+func (r *Renderer) LoadAllLevelTextures(w *World) {
+	for _, outsideTile := range w.tiles {
+		for _, t := range outsideTile {
+			if t.wallTex == "" {
+				continue
+			}
+			r.cacheTexture(t.wallTex)
+		}
+	}
+	for _, s := range w.scenery {
+		for _, sp := range s.entity.sprites {
+			r.cacheTexture(sp.image)
+		}
+	}
+	for _, e := range w.enemies {
+		for _, sp := range e.entity.sprites {
+			r.cacheTexture(sp.image)
+		}
+	}
+	for _, s := range w.particles {
+		r.cacheTexture(s.sprite.image)
+	}
+	for _, e := range w.pickups {
+		for _, sp := range e.entity.sprites {
+			r.cacheTexture(sp.image)
+		}
+	}
+	for _, e := range w.effects {
+		for _, sp := range e.entity.sprites {
+			r.cacheTexture(sp.image)
+		}
+	}
+}

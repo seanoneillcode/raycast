@@ -75,8 +75,8 @@ type debug struct {
 	passiveMode bool
 }
 
-func NewWorld() *World {
-	l := LoadLevel("library.json")
+func NewWorld(level string) *World {
+	l := LoadLevel(level)
 
 	w := &World{
 		soundPlayer: NewSoundPlayer(),

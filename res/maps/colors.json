@@ -93,6 +93,34 @@
                 }]
         }, 
         {
+         "id":6,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"fancy-rock-wall"
+                }]
+        }, 
+        {
+         "id":7,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"fancy-rock-wall-flag"
+                }]
+        }, 
+        {
          "id":10,
          "properties":[
                 {
@@ -166,6 +194,20 @@
                 }]
         }, 
         {
+         "id":22,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"wall-cold"
+                }]
+        }, 
+        {
          "id":23,
          "properties":[
                 {
@@ -232,7 +274,7 @@
                 {
                  "name":"wallTex",
                  "type":"string",
-                 "value":"wall-cold"
+                 "value":"wall-3"
                 }]
         }, 
         {
@@ -348,6 +390,15 @@
                 }]
         }, 
         {
+         "id":41,
+         "properties":[
+                {
+                 "name":"floorTex",
+                 "type":"string",
+                 "value":"floor-rock"
+                }]
+        }, 
+        {
          "id":42,
          "properties":[
                 {
@@ -396,6 +447,48 @@
                  "name":"floorTex",
                  "type":"string",
                  "value":"floor-tiles"
+                }]
+        }, 
+        {
+         "id":46,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"rock-wall"
+                }]
+        }, 
+        {
+         "id":47,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"rock-plinth"
+                }]
+        }, 
+        {
+         "id":48,
+         "properties":[
+                {
+                 "name":"block",
+                 "type":"bool",
+                 "value":true
+                }, 
+                {
+                 "name":"wallTex",
+                 "type":"string",
+                 "value":"rock-pillar"
                 }]
         }],
  "tilewidth":16,

@@ -49,7 +49,7 @@ func NewPlayer(pos vector, dir string) *player {
 			y: 1,
 		},
 		pos:         pos,
-		fireRateMax: 800.0, // millis
+		fireRateMax: 400.0, // millis
 		ammo:        30,
 		width:       0.5,
 		health:      3,

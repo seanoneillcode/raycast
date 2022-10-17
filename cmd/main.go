@@ -15,6 +15,7 @@ func init() {
 
 func main() {
 	g := raycast.NewGame()
+	g.LoadLevel("stars-path.json")
 
 	ebiten.SetWindowSize(raycast.WindowWidth, raycast.WindowHeight)
 	ebiten.SetWindowTitle("Raycast DEMO")

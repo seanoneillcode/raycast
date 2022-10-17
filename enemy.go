@@ -53,7 +53,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			}),
 		)
 		ent.speed = 0.003
-		ent.dropItem = "soul"
+		ent.dropItem = ""
 		break
 	case blobEnemyType:
 		ent = NewEntity(
@@ -110,7 +110,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 			}),
 		)
 		ent.speed = 0.001
-		ent.dropItem = "soul"
+		ent.dropItem = ""
 	case alienEnemyType:
 		e.attackRange = 8 * 8 // distance needs to be squared
 
@@ -139,7 +139,7 @@ func NewEnemy(enemyType EnemyType, pos vector) *enemy {
 		)
 		ent.speed = 0.001
 		ent.health = 2
-		ent.dropItem = "soul"
+		ent.dropItem = ""
 	}
 
 	e.entity = ent

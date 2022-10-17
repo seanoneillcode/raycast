@@ -104,6 +104,14 @@ func loadObjectData(grid *tiledgrid.TiledGrid) *objectData {
 				s := NewSprite("web")
 				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", false, false))
 			}
+			if obj.Name == "rock" {
+				s := NewSprite("scenery-rock-1")
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", false, false))
+			}
+			if obj.Name == "pyramid" {
+				s := NewSprite("pyramid")
+				objData.scenery = append(objData.scenery, NewScenery(s, pos, sceneryDestroyedEffectType, "enemy-hurt", "", false, false))
+			}
 			if obj.Name == "lamp" {
 				s := NewAnimatedSprite("lamp", &animation{
 					numFrames: 4,
